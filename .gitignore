@@ -18,3 +18,9 @@ android/app/google-services.json
 build/
 .packages
 # pubspec.lock IS committed for an app (reproducible builds)
+# Widget Preview related
+.widget_preview/
+
+# IDE
+.idea/
+*.iml

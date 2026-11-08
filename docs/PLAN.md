@@ -39,6 +39,21 @@ targets (the UI still runs on Linux desktop as a dev harness — see below).
 
 ---
 
+## 1a. Local-first now, services later (decided 2026-11-08)
+
+Until the app is feature-complete, **everything runs locally** — no device
+calendars, no iCloud, no stores, no network. A **local store is the source of
+truth** for events, behind the same `CalendarService` port, so the UI, editor,
+recurrence, search and notifications are all built and tested against it on
+Linux/Android with zero external setup. The real integrations
+(`device_calendar`, iCloud/CloudKit, IAP) are swapped in at the **end**, in the
+new **M8 — Integrations** milestone, by replacing adapters only — no UI changes.
+
+Milestone order therefore becomes: M0 (month view, mock) → M1 uses a **drift
+LocalEventStore** (not `device_calendar`) → M2…M7 as before → **M8 wires the
+external services**. M0 keeps it simplest: mock data through the local adapter;
+drift lands in M1.
+
 ## 2. Architecture
 
 **Feature-first + a thin platform layer (ports & adapters).**
