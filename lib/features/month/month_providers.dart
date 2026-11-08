@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/time/month_grid.dart';
+import '../../data/backup_repository.dart';
 import '../../data/db/database.dart';
 import '../../data/event_repository.dart';
 import '../../data/models.dart';
@@ -15,6 +16,9 @@ final databaseProvider = Provider<AppDatabase>((ref) {
 
 final repositoryProvider =
     Provider<EventRepository>((ref) => EventRepository(ref.watch(databaseProvider)));
+
+final backupRepositoryProvider =
+    Provider<BackupRepository>((ref) => BackupRepository(ref.watch(databaseProvider)));
 
 /// Seeds default calendars + sample events on first run.
 final seedProvider =

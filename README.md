@@ -8,7 +8,7 @@ See [`docs/PLAN.md`](docs/PLAN.md) for architecture and the roadmap, and
 [`docs/DESIGN.md`](docs/DESIGN.md) for the design system.
 
 ## Status
-**M4 — home widgets** (native): iOS WidgetKit (Month + Upcoming) and an Android AppWidget, fed by a pure payload builder + a home_widget bridge, with widget-tap deep links. The Dart pipeline is tested on Linux; the native widgets build on a Mac/emulator (see docs/BUILD-IOS.md, docs/WIDGETS.md). Built on M0–M3.
+**M5 — backup & restore** (local): export the whole local store (calendars, events, settings) as a portable JSON document and restore it on another device — the data layer any later cloud sync reuses (cloud transport deferred to M8). Built on M0–M4.
 grid with today + selected-day highlighting, three-tone event chips, multi-day
 spans and a selected-day agenda. No external services yet (everything is local;
 device calendars, iCloud and purchases come in a later milestone).

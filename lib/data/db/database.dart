@@ -142,6 +142,10 @@ class AppDatabase extends _$AppDatabase {
   Future<void> deleteEventsForCalendar(String calendarId) =>
       (delete(events)..where((e) => e.calendarId.equals(calendarId))).go();
 
+  Future<void> clearAllEvents() => delete(events).go();
+
+  Future<void> clearAllCalendars() => delete(calendars).go();
+
   Future<void> upsertCalendar(CalendarsCompanion c) =>
       into(calendars).insertOnConflictUpdate(c);
 

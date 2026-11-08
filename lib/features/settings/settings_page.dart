@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/time/formats.dart';
 import '../../data/models.dart';
+import '../backup/backup_page.dart';
 import '../calendars/calendars_page.dart';
 import '../month/month_providers.dart';
 import '../notifications/notification_providers.dart';
@@ -152,9 +153,22 @@ class SettingsPage extends ConsumerWidget {
             ),
 
             CupertinoListSection.insetGrouped(
+              header: const Text('Data'),
+              children: [
+                CupertinoListTile(
+                  title: const Text('Backup & restore'),
+                  leading: const Icon(CupertinoIcons.square_arrow_up_on_square),
+                  trailing: const CupertinoListTileChevron(),
+                  onTap: () => Navigator.of(context)
+                      .push(CupertinoPageRoute(builder: (_) => const BackupPage())),
+                ),
+              ],
+            ),
+
+            CupertinoListSection.insetGrouped(
               header: const Text('About'),
               children: const [
-                CupertinoListTile(title: Text('Cally'), additionalInfo: Text('M3 · local')),
+                CupertinoListTile(title: Text('Cally'), additionalInfo: Text('M5 · local')),
               ],
             ),
           ],
