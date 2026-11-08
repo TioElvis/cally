@@ -1,1 +1,3 @@
 .DS_Store
+minical-analysis/screenshots/*
+!minical-analysis/screenshots/.gitkeep
