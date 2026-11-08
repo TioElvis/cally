@@ -10,7 +10,20 @@ class Calendars extends Table {
   TextColumn get title => text()();
   IntColumn get colorId => integer()();
   BoolColumn get isDefault => boolean().withDefault(const Constant(false))();
+  BoolColumn get isVisible => boolean().withDefault(const Constant(true))();
   IntColumn get displayOrder => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Single-row app settings (M2).
+@DataClassName('SettingsRow')
+class AppSettingsTable extends Table {
+  TextColumn get id => text().withDefault(const Constant('app'))();
+  IntColumn get themeMode => integer().withDefault(const Constant(0))(); // 0 system,1 light,2 dark
+  IntColumn get weekStart => integer().withDefault(const Constant(DateTime.monday))();
+  BoolColumn get use24h => boolean().withDefault(const Constant(true))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -44,13 +57,24 @@ class Events extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Calendars, Events])
+@DriftDatabase(tables: [Calendars, Events, AppSettingsTable])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
       : super(executor ?? driftDatabase(name: 'cally'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) => m.createAll(),
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.addColumn(calendars, calendars.isVisible);
+            await m.createTable(appSettingsTable);
+          }
+        },
+      );
 
   Stream<List<EventRow>> watchAllEvents() => select(events).watch();
 
@@ -68,8 +92,31 @@ class AppDatabase extends _$AppDatabase {
   Future<void> deleteEvent(String id) =>
       (delete(events)..where((e) => e.id.equals(id))).go();
 
+  Future<void> deleteEventsForCalendar(String calendarId) =>
+      (delete(events)..where((e) => e.calendarId.equals(calendarId))).go();
+
   Future<void> upsertCalendar(CalendarsCompanion c) =>
       into(calendars).insertOnConflictUpdate(c);
 
+  Future<void> deleteCalendar(String id) =>
+      (delete(calendars)..where((c) => c.id.equals(id))).go();
+
+  Future<void> updateCalendar(String id, CalendarsCompanion c) =>
+      (update(calendars)..where((t) => t.id.equals(id))).write(c);
+
+  Future<void> clearDefaultCalendars() =>
+      (update(calendars)..where((c) => c.isDefault.equals(true)))
+          .write(const CalendarsCompanion(isDefault: Value(false)));
+
   Future<int> calendarCount() async => (await select(calendars).get()).length;
+
+  // --- settings ---
+  Stream<SettingsRow?> watchSettings() =>
+      (select(appSettingsTable)..where((t) => t.id.equals('app'))).watchSingleOrNull();
+
+  Future<SettingsRow?> getSettings() =>
+      (select(appSettingsTable)..where((t) => t.id.equals('app'))).getSingleOrNull();
+
+  Future<void> upsertSettings(AppSettingsTableCompanion c) =>
+      into(appSettingsTable).insertOnConflictUpdate(c);
 }

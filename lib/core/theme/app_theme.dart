@@ -2,12 +2,13 @@ import 'package:flutter/cupertino.dart';
 
 import 'tokens.dart';
 
-/// Cupertino theme for Cally. Brightness is left null so it follows the system
-/// (light/dark) automatically, and dynamic CupertinoColors resolve per platform
-/// brightness. Keeps the iOS system font (SF on iOS; the platform sans elsewhere
-/// — we never bundle SF Pro) and our brand accent.
-CupertinoThemeData buildCupertinoTheme() {
-  return const CupertinoThemeData(
+/// Cupertino theme for Cally. A null [brightness] follows the system; passing
+/// light/dark forces it. Dynamic CupertinoColors resolve per brightness. Keeps
+/// the iOS system font (SF on iOS; the platform sans elsewhere — we never bundle
+/// SF Pro) and our brand accent.
+CupertinoThemeData buildCupertinoTheme([Brightness? brightness]) {
+  return CupertinoThemeData(
+    brightness: brightness,
     primaryColor: Tokens.brand,
     applyThemeToAll: true,
   );

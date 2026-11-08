@@ -5,9 +5,12 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/tokens.dart';
+import '../../core/time/formats.dart';
 import '../../core/time/month_grid.dart';
 import '../../data/models.dart';
 import '../event_editor/event_editor_sheet.dart';
+import '../search/search_sheet.dart';
+import '../settings/settings_page.dart';
 import 'month_grid_view.dart';
 import 'month_providers.dart';
 
@@ -134,8 +137,37 @@ class _Header extends StatelessWidget {
             ),
           ),
           if (showToday) _TodayPill(onPressed: onToday),
+          _HeaderIcon(
+            icon: CupertinoIcons.search,
+            semanticLabel: 'Search',
+            onPressed: () => showSearch(context),
+          ),
+          _HeaderIcon(
+            icon: CupertinoIcons.gear,
+            semanticLabel: 'Settings',
+            onPressed: () => Navigator.of(context)
+                .push(CupertinoPageRoute(builder: (_) => const SettingsPage())),
+          ),
         ],
       ),
+    );
+  }
+}
+
+class _HeaderIcon extends StatelessWidget {
+  final IconData icon;
+  final String semanticLabel;
+  final VoidCallback onPressed;
+  const _HeaderIcon(
+      {required this.icon, required this.semanticLabel, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoButton(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      minimumSize: const Size.square(Tokens.minTap),
+      onPressed: onPressed,
+      child: Icon(icon, size: 22, color: CupertinoColors.label.resolveFrom(context)),
     );
   }
 }
@@ -255,8 +287,11 @@ class _DayAgenda extends ConsumerWidget {
           else
             SliverList.builder(
               itemCount: events.length,
-              itemBuilder: (context, i) =>
-                  _AgendaRow(event: events[i], onTap: () => openEditor(events[i])),
+              itemBuilder: (context, i) => _AgendaRow(
+                event: events[i],
+                use24h: ref.watch(use24hProvider),
+                onTap: () => openEditor(events[i]),
+              ),
             ),
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
           SliverToBoxAdapter(child: _NewEventButton(day: day)),
@@ -269,15 +304,16 @@ class _DayAgenda extends ConsumerWidget {
 
 class _AgendaRow extends StatelessWidget {
   final DayOccurrence event;
+  final bool use24h;
   final VoidCallback onTap;
-  const _AgendaRow({required this.event, required this.onTap});
+  const _AgendaRow({required this.event, required this.use24h, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final bar = EventColors.base(event.colorId);
     final time = event.allDay
         ? 'All-day'
-        : '${DateFormat.Hm().format(event.start)} – ${DateFormat.Hm().format(event.end)}';
+        : '${fmtTime(event.start, use24h)} – ${fmtTime(event.end, use24h)}';
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,

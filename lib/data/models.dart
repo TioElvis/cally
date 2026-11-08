@@ -8,15 +8,48 @@ class Calendar {
   final String title;
   final int colorId;
   final bool isDefault;
+  final bool isVisible;
+  final int displayOrder;
   const Calendar({
     required this.id,
     required this.title,
     required this.colorId,
     this.isDefault = false,
+    this.isVisible = true,
+    this.displayOrder = 0,
   });
 
-  factory Calendar.from(CalendarRow r) =>
-      Calendar(id: r.id, title: r.title, colorId: r.colorId, isDefault: r.isDefault);
+  factory Calendar.from(CalendarRow r) => Calendar(
+        id: r.id,
+        title: r.title,
+        colorId: r.colorId,
+        isDefault: r.isDefault,
+        isVisible: r.isVisible,
+        displayOrder: r.displayOrder,
+      );
+}
+
+/// Theme preference.
+enum ThemePref { system, light, dark }
+
+/// App-wide settings (M2).
+class AppSettings {
+  final ThemePref themeMode;
+  final int weekStart; // DateTime.monday..sunday
+  final bool use24h;
+  const AppSettings({
+    this.themeMode = ThemePref.system,
+    this.weekStart = DateTime.monday,
+    this.use24h = true,
+  });
+
+  factory AppSettings.from(SettingsRow? r) => r == null
+      ? const AppSettings()
+      : AppSettings(
+          themeMode: ThemePref.values[r.themeMode.clamp(0, ThemePref.values.length - 1)],
+          weekStart: r.weekStart,
+          use24h: r.use24h,
+        );
 }
 
 /// One concrete occurrence of an event, ready to render. Produced by expanding

@@ -4,6 +4,7 @@ import '../../core/time/month_grid.dart';
 import '../../data/db/database.dart';
 import '../../data/event_repository.dart';
 import '../../data/models.dart';
+import '../../data/settings_repository.dart';
 
 /// The drift database (disposed with the provider scope).
 final databaseProvider = Provider<AppDatabase>((ref) {
@@ -19,8 +20,23 @@ final repositoryProvider =
 final seedProvider =
     FutureProvider<void>((ref) => ref.watch(repositoryProvider).ensureSeeded());
 
-/// First day of the week (M1: fixed Monday; a setting in M2).
-final weekStartProvider = Provider<int>((_) => DateTime.monday);
+final settingsRepositoryProvider =
+    Provider<SettingsRepository>((ref) => SettingsRepository(ref.watch(databaseProvider)));
+
+final settingsProvider = StreamProvider<AppSettings>(
+    (ref) => ref.watch(settingsRepositoryProvider).watch());
+
+AppSettings _settings(Ref ref) =>
+    ref.watch(settingsProvider).value ?? const AppSettings();
+
+/// First day of the week, from settings.
+final weekStartProvider = Provider<int>((ref) => _settings(ref).weekStart);
+
+/// 24-hour time preference, from settings.
+final use24hProvider = Provider<bool>((ref) => _settings(ref).use24h);
+
+/// Theme preference, from settings.
+final themePrefProvider = Provider<ThemePref>((ref) => _settings(ref).themeMode);
 
 final calendarsProvider = StreamProvider<List<Calendar>>(
     (ref) => ref.watch(repositoryProvider).watchCalendars());
@@ -31,6 +47,12 @@ final eventRowsProvider = StreamProvider<List<EventRow>>(
 Map<String, int> _calColor(List<Calendar> cals) =>
     {for (final c in cals) c.id: c.colorId};
 
+/// Only rows whose calendar is currently visible.
+List<EventRow> _visibleRows(List<EventRow> rows, List<Calendar> cals) {
+  final visible = {for (final c in cals) if (c.isVisible) c.id};
+  return rows.where((r) => visible.contains(r.calendarId)).toList();
+}
+
 /// All occurrences overlapping the 42-day window of [monthAnchor].
 final monthOccurrencesProvider =
     Provider.family<List<DayOccurrence>, DateTime>((ref, monthAnchor) {
@@ -39,7 +61,7 @@ final monthOccurrencesProvider =
   final days = monthGridDays(monthAnchor, ref.watch(weekStartProvider));
   final from = days.first;
   final to = days.last.add(const Duration(days: 1));
-  return expandAll(rows, _calColor(cals), from, to);
+  return expandAll(_visibleRows(rows, cals), _calColor(cals), from, to);
 });
 
 /// Occurrences on a single day, sorted (all-day first, then by start).
@@ -49,7 +71,8 @@ final dayOccurrencesProvider =
   final cals = ref.watch(calendarsProvider).value ?? const [];
   final from = dateOnly(day);
   final to = from.add(const Duration(days: 1));
-  return sortOccurrences(expandAll(rows, _calColor(cals), from, to));
+  return sortOccurrences(
+      expandAll(_visibleRows(rows, cals), _calColor(cals), from, to));
 });
 
 /// The default calendar for new events.

@@ -53,6 +53,21 @@ class $CalendarsTable extends Calendars
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _isVisibleMeta = const VerificationMeta(
+    'isVisible',
+  );
+  @override
+  late final GeneratedColumn<bool> isVisible = GeneratedColumn<bool>(
+    'is_visible',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_visible" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   static const VerificationMeta _displayOrderMeta = const VerificationMeta(
     'displayOrder',
   );
@@ -71,6 +86,7 @@ class $CalendarsTable extends Calendars
     title,
     colorId,
     isDefault,
+    isVisible,
     displayOrder,
   ];
   @override
@@ -112,6 +128,12 @@ class $CalendarsTable extends Calendars
         isDefault.isAcceptableOrUnknown(data['is_default']!, _isDefaultMeta),
       );
     }
+    if (data.containsKey('is_visible')) {
+      context.handle(
+        _isVisibleMeta,
+        isVisible.isAcceptableOrUnknown(data['is_visible']!, _isVisibleMeta),
+      );
+    }
     if (data.containsKey('display_order')) {
       context.handle(
         _displayOrderMeta,
@@ -146,6 +168,10 @@ class $CalendarsTable extends Calendars
         DriftSqlType.bool,
         data['${effectivePrefix}is_default'],
       )!,
+      isVisible: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_visible'],
+      )!,
       displayOrder: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}display_order'],
@@ -164,12 +190,14 @@ class CalendarRow extends DataClass implements Insertable<CalendarRow> {
   final String title;
   final int colorId;
   final bool isDefault;
+  final bool isVisible;
   final int displayOrder;
   const CalendarRow({
     required this.id,
     required this.title,
     required this.colorId,
     required this.isDefault,
+    required this.isVisible,
     required this.displayOrder,
   });
   @override
@@ -179,6 +207,7 @@ class CalendarRow extends DataClass implements Insertable<CalendarRow> {
     map['title'] = Variable<String>(title);
     map['color_id'] = Variable<int>(colorId);
     map['is_default'] = Variable<bool>(isDefault);
+    map['is_visible'] = Variable<bool>(isVisible);
     map['display_order'] = Variable<int>(displayOrder);
     return map;
   }
@@ -189,6 +218,7 @@ class CalendarRow extends DataClass implements Insertable<CalendarRow> {
       title: Value(title),
       colorId: Value(colorId),
       isDefault: Value(isDefault),
+      isVisible: Value(isVisible),
       displayOrder: Value(displayOrder),
     );
   }
@@ -203,6 +233,7 @@ class CalendarRow extends DataClass implements Insertable<CalendarRow> {
       title: serializer.fromJson<String>(json['title']),
       colorId: serializer.fromJson<int>(json['colorId']),
       isDefault: serializer.fromJson<bool>(json['isDefault']),
+      isVisible: serializer.fromJson<bool>(json['isVisible']),
       displayOrder: serializer.fromJson<int>(json['displayOrder']),
     );
   }
@@ -214,6 +245,7 @@ class CalendarRow extends DataClass implements Insertable<CalendarRow> {
       'title': serializer.toJson<String>(title),
       'colorId': serializer.toJson<int>(colorId),
       'isDefault': serializer.toJson<bool>(isDefault),
+      'isVisible': serializer.toJson<bool>(isVisible),
       'displayOrder': serializer.toJson<int>(displayOrder),
     };
   }
@@ -223,12 +255,14 @@ class CalendarRow extends DataClass implements Insertable<CalendarRow> {
     String? title,
     int? colorId,
     bool? isDefault,
+    bool? isVisible,
     int? displayOrder,
   }) => CalendarRow(
     id: id ?? this.id,
     title: title ?? this.title,
     colorId: colorId ?? this.colorId,
     isDefault: isDefault ?? this.isDefault,
+    isVisible: isVisible ?? this.isVisible,
     displayOrder: displayOrder ?? this.displayOrder,
   );
   CalendarRow copyWithCompanion(CalendarsCompanion data) {
@@ -237,6 +271,7 @@ class CalendarRow extends DataClass implements Insertable<CalendarRow> {
       title: data.title.present ? data.title.value : this.title,
       colorId: data.colorId.present ? data.colorId.value : this.colorId,
       isDefault: data.isDefault.present ? data.isDefault.value : this.isDefault,
+      isVisible: data.isVisible.present ? data.isVisible.value : this.isVisible,
       displayOrder: data.displayOrder.present
           ? data.displayOrder.value
           : this.displayOrder,
@@ -250,13 +285,15 @@ class CalendarRow extends DataClass implements Insertable<CalendarRow> {
           ..write('title: $title, ')
           ..write('colorId: $colorId, ')
           ..write('isDefault: $isDefault, ')
+          ..write('isVisible: $isVisible, ')
           ..write('displayOrder: $displayOrder')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, title, colorId, isDefault, displayOrder);
+  int get hashCode =>
+      Object.hash(id, title, colorId, isDefault, isVisible, displayOrder);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -265,6 +302,7 @@ class CalendarRow extends DataClass implements Insertable<CalendarRow> {
           other.title == this.title &&
           other.colorId == this.colorId &&
           other.isDefault == this.isDefault &&
+          other.isVisible == this.isVisible &&
           other.displayOrder == this.displayOrder);
 }
 
@@ -273,6 +311,7 @@ class CalendarsCompanion extends UpdateCompanion<CalendarRow> {
   final Value<String> title;
   final Value<int> colorId;
   final Value<bool> isDefault;
+  final Value<bool> isVisible;
   final Value<int> displayOrder;
   final Value<int> rowid;
   const CalendarsCompanion({
@@ -280,6 +319,7 @@ class CalendarsCompanion extends UpdateCompanion<CalendarRow> {
     this.title = const Value.absent(),
     this.colorId = const Value.absent(),
     this.isDefault = const Value.absent(),
+    this.isVisible = const Value.absent(),
     this.displayOrder = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -288,6 +328,7 @@ class CalendarsCompanion extends UpdateCompanion<CalendarRow> {
     required String title,
     required int colorId,
     this.isDefault = const Value.absent(),
+    this.isVisible = const Value.absent(),
     this.displayOrder = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -298,6 +339,7 @@ class CalendarsCompanion extends UpdateCompanion<CalendarRow> {
     Expression<String>? title,
     Expression<int>? colorId,
     Expression<bool>? isDefault,
+    Expression<bool>? isVisible,
     Expression<int>? displayOrder,
     Expression<int>? rowid,
   }) {
@@ -306,6 +348,7 @@ class CalendarsCompanion extends UpdateCompanion<CalendarRow> {
       if (title != null) 'title': title,
       if (colorId != null) 'color_id': colorId,
       if (isDefault != null) 'is_default': isDefault,
+      if (isVisible != null) 'is_visible': isVisible,
       if (displayOrder != null) 'display_order': displayOrder,
       if (rowid != null) 'rowid': rowid,
     });
@@ -316,6 +359,7 @@ class CalendarsCompanion extends UpdateCompanion<CalendarRow> {
     Value<String>? title,
     Value<int>? colorId,
     Value<bool>? isDefault,
+    Value<bool>? isVisible,
     Value<int>? displayOrder,
     Value<int>? rowid,
   }) {
@@ -324,6 +368,7 @@ class CalendarsCompanion extends UpdateCompanion<CalendarRow> {
       title: title ?? this.title,
       colorId: colorId ?? this.colorId,
       isDefault: isDefault ?? this.isDefault,
+      isVisible: isVisible ?? this.isVisible,
       displayOrder: displayOrder ?? this.displayOrder,
       rowid: rowid ?? this.rowid,
     );
@@ -344,6 +389,9 @@ class CalendarsCompanion extends UpdateCompanion<CalendarRow> {
     if (isDefault.present) {
       map['is_default'] = Variable<bool>(isDefault.value);
     }
+    if (isVisible.present) {
+      map['is_visible'] = Variable<bool>(isVisible.value);
+    }
     if (displayOrder.present) {
       map['display_order'] = Variable<int>(displayOrder.value);
     }
@@ -360,6 +408,7 @@ class CalendarsCompanion extends UpdateCompanion<CalendarRow> {
           ..write('title: $title, ')
           ..write('colorId: $colorId, ')
           ..write('isDefault: $isDefault, ')
+          ..write('isVisible: $isVisible, ')
           ..write('displayOrder: $displayOrder, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -1270,16 +1319,327 @@ class EventsCompanion extends UpdateCompanion<EventRow> {
   }
 }
 
+class $AppSettingsTableTable extends AppSettingsTable
+    with TableInfo<$AppSettingsTableTable, SettingsRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AppSettingsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('app'),
+  );
+  static const VerificationMeta _themeModeMeta = const VerificationMeta(
+    'themeMode',
+  );
+  @override
+  late final GeneratedColumn<int> themeMode = GeneratedColumn<int>(
+    'theme_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _weekStartMeta = const VerificationMeta(
+    'weekStart',
+  );
+  @override
+  late final GeneratedColumn<int> weekStart = GeneratedColumn<int>(
+    'week_start',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(DateTime.monday),
+  );
+  static const VerificationMeta _use24hMeta = const VerificationMeta('use24h');
+  @override
+  late final GeneratedColumn<bool> use24h = GeneratedColumn<bool>(
+    'use24h',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("use24h" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, themeMode, weekStart, use24h];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'app_settings_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SettingsRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('theme_mode')) {
+      context.handle(
+        _themeModeMeta,
+        themeMode.isAcceptableOrUnknown(data['theme_mode']!, _themeModeMeta),
+      );
+    }
+    if (data.containsKey('week_start')) {
+      context.handle(
+        _weekStartMeta,
+        weekStart.isAcceptableOrUnknown(data['week_start']!, _weekStartMeta),
+      );
+    }
+    if (data.containsKey('use24h')) {
+      context.handle(
+        _use24hMeta,
+        use24h.isAcceptableOrUnknown(data['use24h']!, _use24hMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SettingsRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SettingsRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      themeMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}theme_mode'],
+      )!,
+      weekStart: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}week_start'],
+      )!,
+      use24h: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}use24h'],
+      )!,
+    );
+  }
+
+  @override
+  $AppSettingsTableTable createAlias(String alias) {
+    return $AppSettingsTableTable(attachedDatabase, alias);
+  }
+}
+
+class SettingsRow extends DataClass implements Insertable<SettingsRow> {
+  final String id;
+  final int themeMode;
+  final int weekStart;
+  final bool use24h;
+  const SettingsRow({
+    required this.id,
+    required this.themeMode,
+    required this.weekStart,
+    required this.use24h,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['theme_mode'] = Variable<int>(themeMode);
+    map['week_start'] = Variable<int>(weekStart);
+    map['use24h'] = Variable<bool>(use24h);
+    return map;
+  }
+
+  AppSettingsTableCompanion toCompanion(bool nullToAbsent) {
+    return AppSettingsTableCompanion(
+      id: Value(id),
+      themeMode: Value(themeMode),
+      weekStart: Value(weekStart),
+      use24h: Value(use24h),
+    );
+  }
+
+  factory SettingsRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SettingsRow(
+      id: serializer.fromJson<String>(json['id']),
+      themeMode: serializer.fromJson<int>(json['themeMode']),
+      weekStart: serializer.fromJson<int>(json['weekStart']),
+      use24h: serializer.fromJson<bool>(json['use24h']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'themeMode': serializer.toJson<int>(themeMode),
+      'weekStart': serializer.toJson<int>(weekStart),
+      'use24h': serializer.toJson<bool>(use24h),
+    };
+  }
+
+  SettingsRow copyWith({
+    String? id,
+    int? themeMode,
+    int? weekStart,
+    bool? use24h,
+  }) => SettingsRow(
+    id: id ?? this.id,
+    themeMode: themeMode ?? this.themeMode,
+    weekStart: weekStart ?? this.weekStart,
+    use24h: use24h ?? this.use24h,
+  );
+  SettingsRow copyWithCompanion(AppSettingsTableCompanion data) {
+    return SettingsRow(
+      id: data.id.present ? data.id.value : this.id,
+      themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
+      weekStart: data.weekStart.present ? data.weekStart.value : this.weekStart,
+      use24h: data.use24h.present ? data.use24h.value : this.use24h,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SettingsRow(')
+          ..write('id: $id, ')
+          ..write('themeMode: $themeMode, ')
+          ..write('weekStart: $weekStart, ')
+          ..write('use24h: $use24h')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, themeMode, weekStart, use24h);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SettingsRow &&
+          other.id == this.id &&
+          other.themeMode == this.themeMode &&
+          other.weekStart == this.weekStart &&
+          other.use24h == this.use24h);
+}
+
+class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
+  final Value<String> id;
+  final Value<int> themeMode;
+  final Value<int> weekStart;
+  final Value<bool> use24h;
+  final Value<int> rowid;
+  const AppSettingsTableCompanion({
+    this.id = const Value.absent(),
+    this.themeMode = const Value.absent(),
+    this.weekStart = const Value.absent(),
+    this.use24h = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AppSettingsTableCompanion.insert({
+    this.id = const Value.absent(),
+    this.themeMode = const Value.absent(),
+    this.weekStart = const Value.absent(),
+    this.use24h = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  static Insertable<SettingsRow> custom({
+    Expression<String>? id,
+    Expression<int>? themeMode,
+    Expression<int>? weekStart,
+    Expression<bool>? use24h,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (themeMode != null) 'theme_mode': themeMode,
+      if (weekStart != null) 'week_start': weekStart,
+      if (use24h != null) 'use24h': use24h,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AppSettingsTableCompanion copyWith({
+    Value<String>? id,
+    Value<int>? themeMode,
+    Value<int>? weekStart,
+    Value<bool>? use24h,
+    Value<int>? rowid,
+  }) {
+    return AppSettingsTableCompanion(
+      id: id ?? this.id,
+      themeMode: themeMode ?? this.themeMode,
+      weekStart: weekStart ?? this.weekStart,
+      use24h: use24h ?? this.use24h,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (themeMode.present) {
+      map['theme_mode'] = Variable<int>(themeMode.value);
+    }
+    if (weekStart.present) {
+      map['week_start'] = Variable<int>(weekStart.value);
+    }
+    if (use24h.present) {
+      map['use24h'] = Variable<bool>(use24h.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppSettingsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('themeMode: $themeMode, ')
+          ..write('weekStart: $weekStart, ')
+          ..write('use24h: $use24h, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $CalendarsTable calendars = $CalendarsTable(this);
   late final $EventsTable events = $EventsTable(this);
+  late final $AppSettingsTableTable appSettingsTable = $AppSettingsTableTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [calendars, events];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    calendars,
+    events,
+    appSettingsTable,
+  ];
 }
 
 typedef $$CalendarsTableCreateCompanionBuilder = CalendarsCompanion Function({
@@ -1287,6 +1647,7 @@ typedef $$CalendarsTableCreateCompanionBuilder = CalendarsCompanion Function({
   required String title,
   required int colorId,
   Value<bool> isDefault,
+  Value<bool> isVisible,
   Value<int> displayOrder,
   Value<int> rowid,
 });
@@ -1295,6 +1656,7 @@ typedef $$CalendarsTableUpdateCompanionBuilder = CalendarsCompanion Function({
   Value<String> title,
   Value<int> colorId,
   Value<bool> isDefault,
+  Value<bool> isVisible,
   Value<int> displayOrder,
   Value<int> rowid,
 });
@@ -1349,6 +1711,11 @@ class $$CalendarsTableFilterComposer
 
   ColumnFilters<bool> get isDefault => $composableBuilder(
     column: $table.isDefault,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isVisible => $composableBuilder(
+    column: $table.isVisible,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1412,6 +1779,11 @@ class $$CalendarsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isVisible => $composableBuilder(
+    column: $table.isVisible,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get displayOrder => $composableBuilder(
     column: $table.displayOrder,
     builder: (column) => ColumnOrderings(column),
@@ -1438,6 +1810,9 @@ class $$CalendarsTableAnnotationComposer
 
   GeneratedColumn<bool> get isDefault =>
       $composableBuilder(column: $table.isDefault, builder: (column) => column);
+
+  GeneratedColumn<bool> get isVisible =>
+      $composableBuilder(column: $table.isVisible, builder: (column) => column);
 
   GeneratedColumn<int> get displayOrder => $composableBuilder(
     column: $table.displayOrder,
@@ -1502,6 +1877,7 @@ class $$CalendarsTableTableManager
                 Value<String> title = const Value.absent(),
                 Value<int> colorId = const Value.absent(),
                 Value<bool> isDefault = const Value.absent(),
+                Value<bool> isVisible = const Value.absent(),
                 Value<int> displayOrder = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CalendarsCompanion(
@@ -1509,6 +1885,7 @@ class $$CalendarsTableTableManager
                 title: title,
                 colorId: colorId,
                 isDefault: isDefault,
+                isVisible: isVisible,
                 displayOrder: displayOrder,
                 rowid: rowid,
               ),
@@ -1518,6 +1895,7 @@ class $$CalendarsTableTableManager
                 required String title,
                 required int colorId,
                 Value<bool> isDefault = const Value.absent(),
+                Value<bool> isVisible = const Value.absent(),
                 Value<int> displayOrder = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CalendarsCompanion.insert(
@@ -1525,6 +1903,7 @@ class $$CalendarsTableTableManager
                 title: title,
                 colorId: colorId,
                 isDefault: isDefault,
+                isVisible: isVisible,
                 displayOrder: displayOrder,
                 rowid: rowid,
               ),
@@ -2109,6 +2488,198 @@ typedef $$EventsTableProcessedTableManager =
       EventRow,
       PrefetchHooks Function({bool calendarId})
     >;
+typedef $$AppSettingsTableTableCreateCompanionBuilder =
+    AppSettingsTableCompanion Function({
+      Value<String> id,
+      Value<int> themeMode,
+      Value<int> weekStart,
+      Value<bool> use24h,
+      Value<int> rowid,
+    });
+typedef $$AppSettingsTableTableUpdateCompanionBuilder =
+    AppSettingsTableCompanion Function({
+      Value<String> id,
+      Value<int> themeMode,
+      Value<int> weekStart,
+      Value<bool> use24h,
+      Value<int> rowid,
+    });
+
+class $$AppSettingsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $AppSettingsTableTable> {
+  $$AppSettingsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get themeMode => $composableBuilder(
+    column: $table.themeMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get weekStart => $composableBuilder(
+    column: $table.weekStart,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get use24h => $composableBuilder(
+    column: $table.use24h,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AppSettingsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $AppSettingsTableTable> {
+  $$AppSettingsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get themeMode => $composableBuilder(
+    column: $table.themeMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get weekStart => $composableBuilder(
+    column: $table.weekStart,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get use24h => $composableBuilder(
+    column: $table.use24h,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AppSettingsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AppSettingsTableTable> {
+  $$AppSettingsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get themeMode =>
+      $composableBuilder(column: $table.themeMode, builder: (column) => column);
+
+  GeneratedColumn<int> get weekStart =>
+      $composableBuilder(column: $table.weekStart, builder: (column) => column);
+
+  GeneratedColumn<bool> get use24h =>
+      $composableBuilder(column: $table.use24h, builder: (column) => column);
+}
+
+class $$AppSettingsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AppSettingsTableTable,
+          SettingsRow,
+          $$AppSettingsTableTableFilterComposer,
+          $$AppSettingsTableTableOrderingComposer,
+          $$AppSettingsTableTableAnnotationComposer,
+          $$AppSettingsTableTableCreateCompanionBuilder,
+          $$AppSettingsTableTableUpdateCompanionBuilder,
+          (
+            SettingsRow,
+            BaseReferences<_$AppDatabase, $AppSettingsTableTable, SettingsRow>,
+          ),
+          SettingsRow,
+          PrefetchHooks Function()
+        > {
+  $$AppSettingsTableTableTableManager(
+    _$AppDatabase db,
+    $AppSettingsTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AppSettingsTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AppSettingsTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AppSettingsTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> themeMode = const Value.absent(),
+                Value<int> weekStart = const Value.absent(),
+                Value<bool> use24h = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AppSettingsTableCompanion(
+                id: id,
+                themeMode: themeMode,
+                weekStart: weekStart,
+                use24h: use24h,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> themeMode = const Value.absent(),
+                Value<int> weekStart = const Value.absent(),
+                Value<bool> use24h = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AppSettingsTableCompanion.insert(
+                id: id,
+                themeMode: themeMode,
+                weekStart: weekStart,
+                use24h: use24h,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$AppSettingsTableTable, SettingsRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $AppSettingsTableTable,
+                    SettingsRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AppSettingsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AppSettingsTableTable,
+      SettingsRow,
+      $$AppSettingsTableTableFilterComposer,
+      $$AppSettingsTableTableOrderingComposer,
+      $$AppSettingsTableTableAnnotationComposer,
+      $$AppSettingsTableTableCreateCompanionBuilder,
+      $$AppSettingsTableTableUpdateCompanionBuilder,
+      (
+        SettingsRow,
+        BaseReferences<_$AppDatabase, $AppSettingsTableTable, SettingsRow>,
+      ),
+      SettingsRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2117,4 +2688,6 @@ class $AppDatabaseManager {
       $$CalendarsTableTableManager(_db, _db.calendars);
   $$EventsTableTableManager get events =>
       $$EventsTableTableManager(_db, _db.events);
+  $$AppSettingsTableTableTableManager get appSettingsTable =>
+      $$AppSettingsTableTableTableManager(_db, _db.appSettingsTable);
 }

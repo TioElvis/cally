@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/tokens.dart';
+import '../../core/time/formats.dart';
 import '../../core/time/recurrence.dart';
 import '../../data/models.dart';
 import '../month/month_providers.dart';
@@ -102,6 +102,7 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
   @override
   Widget build(BuildContext context) {
     final cals = ref.watch(calendarsProvider).value ?? const [];
+    final use24h = ref.watch(use24hProvider);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         leading: CupertinoButton(
@@ -145,14 +146,14 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
               _TapRow(
                 icon: CupertinoIcons.calendar,
                 label: 'Starts',
-                value: _fmt(d.start, d.allDay),
+                value: _fmt(d.start, d.allDay, use24h),
                 onTap: () => _pickStart(),
               ),
               if (!d.allDay)
                 _TapRow(
                   icon: null,
                   label: 'Ends',
-                  value: _fmt(d.end, d.allDay),
+                  value: _fmt(d.end, d.allDay, use24h),
                   onTap: () => _pickEnd(),
                 ),
             ]),
@@ -217,7 +218,7 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
 
   // --- pickers ---
   Future<void> _pickStart() async {
-    final picked = await _pickDateTime(context, d.start, dateOnly: d.allDay);
+    final picked = await _pickDateTime(context, d.start, dateOnly: d.allDay, use24h: ref.read(use24hProvider));
     if (picked != null) {
       setState(() {
         final delta = picked.difference(d.start);
@@ -228,7 +229,7 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
   }
 
   Future<void> _pickEnd() async {
-    final picked = await _pickDateTime(context, d.end, dateOnly: d.allDay);
+    final picked = await _pickDateTime(context, d.end, dateOnly: d.allDay, use24h: ref.read(use24hProvider));
     if (picked != null) setState(() => d.end = picked);
   }
 
@@ -308,9 +309,8 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
     );
   }
 
-  String _fmt(DateTime dt, bool allDay) => allDay
-      ? DateFormat('EEE d MMM y').format(dt)
-      : DateFormat('EEE d MMM, HH:mm').format(dt);
+  String _fmt(DateTime dt, bool allDay, bool use24h) =>
+      allDay ? fmtDate(dt) : fmtDateTime(dt, use24h);
 
   String _repeatLabel(Freq f) => const {
         Freq.none: 'Doesn\'t repeat',
@@ -329,7 +329,7 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
 }
 
 Future<DateTime?> _pickDateTime(BuildContext context, DateTime initial,
-    {bool dateOnly = false}) {
+    {bool dateOnly = false, bool use24h = true}) {
   DateTime temp = initial;
   return showCupertinoModalPopup<DateTime>(
     context: context,
@@ -358,7 +358,7 @@ Future<DateTime?> _pickDateTime(BuildContext context, DateTime initial,
                 mode: dateOnly
                     ? CupertinoDatePickerMode.date
                     : CupertinoDatePickerMode.dateAndTime,
-                use24hFormat: true,
+                use24hFormat: use24h,
                 onDateTimeChanged: (v) => temp = v,
               ),
             ),

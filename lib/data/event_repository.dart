@@ -41,6 +41,47 @@ class EventRepository {
 
   Future<void> delete(String id) => db.deleteEvent(id);
 
+  // --- calendars ---
+  Future<void> setCalendarVisible(String id, bool visible) =>
+      db.updateCalendar(id, CalendarsCompanion(isVisible: Value(visible)));
+
+  Future<void> setDefaultCalendar(String id) async {
+    await db.clearDefaultCalendars();
+    await db.updateCalendar(id, const CalendarsCompanion(isDefault: Value(true)));
+  }
+
+  /// Create (id == null) or rename/recolour a calendar.
+  Future<void> saveCalendar({String? id, required String title, required int colorId}) async {
+    final name = title.trim().isEmpty ? 'Calendar' : title.trim();
+    if (id == null) {
+      final existing = await db.allCalendars();
+      final order = existing.isEmpty
+          ? 0
+          : existing.map((c) => c.displayOrder).reduce((a, b) => a > b ? a : b) + 1;
+      await db.upsertCalendar(CalendarsCompanion.insert(
+        id: _uuid.v4(),
+        title: name,
+        colorId: colorId,
+        displayOrder: Value(order),
+      ));
+    } else {
+      await db.updateCalendar(
+          id, CalendarsCompanion(title: Value(name), colorId: Value(colorId)));
+    }
+  }
+
+  /// Delete a calendar and its events.
+  Future<void> deleteCalendar(String id) async {
+    await db.deleteEventsForCalendar(id);
+    await db.deleteCalendar(id);
+  }
+
+  Future<void> reorderCalendars(List<String> idsInOrder) async {
+    for (var i = 0; i < idsInOrder.length; i++) {
+      await db.updateCalendar(idsInOrder[i], CalendarsCompanion(displayOrder: Value(i)));
+    }
+  }
+
   /// Create default calendars and a few sample events the first time the app
   /// runs, so the month view isn't empty. Idempotent.
   Future<void> ensureSeeded() async {
