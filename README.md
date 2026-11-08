@@ -8,7 +8,7 @@ See [`docs/PLAN.md`](docs/PLAN.md) for architecture and the roadmap, and
 [`docs/DESIGN.md`](docs/DESIGN.md) for the design system.
 
 ## Status
-**M6 — sharing** (local): share any event out as readable text or as a standard **.ics** file (iCalendar with RRULE), via a long-press actions menu on agenda rows (Share text / Share .ics / Edit / Delete), behind a share port. Built on M0–M5.
+**M7 — Cally Pro** (local): a one-time Pro entitlement with a paywall and a purchase port (local unlock for dev; real IAP deferred to M8). Pro gates **week numbers** in the month grid (ISO 8601), with locks on gated controls that open the paywall. No ads, no tracking. Built on M0–M6.
 grid with today + selected-day highlighting, three-tone event chips, multi-day
 spans and a selected-day agenda. No external services yet (everything is local;
 device calendars, iCloud and purchases come in a later milestone).

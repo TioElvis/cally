@@ -48,6 +48,8 @@ class AppSettings {
   final bool digestEveningOn;
   final int digestEveningMin;
   final BadgeType badgeType;
+  final bool isPro;
+  final bool showWeekNumbers;
 
   const AppSettings({
     this.themeMode = ThemePref.system,
@@ -60,7 +62,12 @@ class AppSettings {
     this.digestEveningOn = false,
     this.digestEveningMin = 20 * 60,
     this.badgeType = BadgeType.none,
+    this.isPro = false,
+    this.showWeekNumbers = false,
   });
+
+  /// Effective flag (a feature is on only when enabled AND Pro is unlocked).
+  bool get weekNumbersEnabled => isPro && showWeekNumbers;
 
   factory AppSettings.from(SettingsRow? r) => r == null
       ? const AppSettings()
@@ -75,6 +82,8 @@ class AppSettings {
           digestEveningOn: r.digestEveningOn,
           digestEveningMin: r.digestEveningMin,
           badgeType: BadgeType.values[r.badgeType.clamp(0, BadgeType.values.length - 1)],
+          isPro: r.isPro,
+          showWeekNumbers: r.showWeekNumbers,
         );
 }
 

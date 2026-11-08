@@ -1459,6 +1459,34 @@ class $AppSettingsTableTable extends AppSettingsTable
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _isProMeta = const VerificationMeta('isPro');
+  @override
+  late final GeneratedColumn<bool> isPro = GeneratedColumn<bool>(
+    'is_pro',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_pro" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _showWeekNumbersMeta = const VerificationMeta(
+    'showWeekNumbers',
+  );
+  @override
+  late final GeneratedColumn<bool> showWeekNumbers = GeneratedColumn<bool>(
+    'show_week_numbers',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("show_week_numbers" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1472,6 +1500,8 @@ class $AppSettingsTableTable extends AppSettingsTable
     digestEveningOn,
     digestEveningMin,
     badgeType,
+    isPro,
+    showWeekNumbers,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1566,6 +1596,21 @@ class $AppSettingsTableTable extends AppSettingsTable
         badgeType.isAcceptableOrUnknown(data['badge_type']!, _badgeTypeMeta),
       );
     }
+    if (data.containsKey('is_pro')) {
+      context.handle(
+        _isProMeta,
+        isPro.isAcceptableOrUnknown(data['is_pro']!, _isProMeta),
+      );
+    }
+    if (data.containsKey('show_week_numbers')) {
+      context.handle(
+        _showWeekNumbersMeta,
+        showWeekNumbers.isAcceptableOrUnknown(
+          data['show_week_numbers']!,
+          _showWeekNumbersMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1619,6 +1664,14 @@ class $AppSettingsTableTable extends AppSettingsTable
         DriftSqlType.int,
         data['${effectivePrefix}badge_type'],
       )!,
+      isPro: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_pro'],
+      )!,
+      showWeekNumbers: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}show_week_numbers'],
+      )!,
     );
   }
 
@@ -1640,6 +1693,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
   final bool digestEveningOn;
   final int digestEveningMin;
   final int badgeType;
+  final bool isPro;
+  final bool showWeekNumbers;
   const SettingsRow({
     required this.id,
     required this.themeMode,
@@ -1652,6 +1707,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     required this.digestEveningOn,
     required this.digestEveningMin,
     required this.badgeType,
+    required this.isPro,
+    required this.showWeekNumbers,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1671,6 +1728,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     map['digest_evening_on'] = Variable<bool>(digestEveningOn);
     map['digest_evening_min'] = Variable<int>(digestEveningMin);
     map['badge_type'] = Variable<int>(badgeType);
+    map['is_pro'] = Variable<bool>(isPro);
+    map['show_week_numbers'] = Variable<bool>(showWeekNumbers);
     return map;
   }
 
@@ -1691,6 +1750,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       digestEveningOn: Value(digestEveningOn),
       digestEveningMin: Value(digestEveningMin),
       badgeType: Value(badgeType),
+      isPro: Value(isPro),
+      showWeekNumbers: Value(showWeekNumbers),
     );
   }
 
@@ -1711,6 +1772,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       digestEveningOn: serializer.fromJson<bool>(json['digestEveningOn']),
       digestEveningMin: serializer.fromJson<int>(json['digestEveningMin']),
       badgeType: serializer.fromJson<int>(json['badgeType']),
+      isPro: serializer.fromJson<bool>(json['isPro']),
+      showWeekNumbers: serializer.fromJson<bool>(json['showWeekNumbers']),
     );
   }
   @override
@@ -1728,6 +1791,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       'digestEveningOn': serializer.toJson<bool>(digestEveningOn),
       'digestEveningMin': serializer.toJson<int>(digestEveningMin),
       'badgeType': serializer.toJson<int>(badgeType),
+      'isPro': serializer.toJson<bool>(isPro),
+      'showWeekNumbers': serializer.toJson<bool>(showWeekNumbers),
     };
   }
 
@@ -1743,6 +1808,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     bool? digestEveningOn,
     int? digestEveningMin,
     int? badgeType,
+    bool? isPro,
+    bool? showWeekNumbers,
   }) => SettingsRow(
     id: id ?? this.id,
     themeMode: themeMode ?? this.themeMode,
@@ -1759,6 +1826,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     digestEveningOn: digestEveningOn ?? this.digestEveningOn,
     digestEveningMin: digestEveningMin ?? this.digestEveningMin,
     badgeType: badgeType ?? this.badgeType,
+    isPro: isPro ?? this.isPro,
+    showWeekNumbers: showWeekNumbers ?? this.showWeekNumbers,
   );
   SettingsRow copyWithCompanion(AppSettingsTableCompanion data) {
     return SettingsRow(
@@ -1785,6 +1854,10 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           ? data.digestEveningMin.value
           : this.digestEveningMin,
       badgeType: data.badgeType.present ? data.badgeType.value : this.badgeType,
+      isPro: data.isPro.present ? data.isPro.value : this.isPro,
+      showWeekNumbers: data.showWeekNumbers.present
+          ? data.showWeekNumbers.value
+          : this.showWeekNumbers,
     );
   }
 
@@ -1801,7 +1874,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           ..write('digestMorningMin: $digestMorningMin, ')
           ..write('digestEveningOn: $digestEveningOn, ')
           ..write('digestEveningMin: $digestEveningMin, ')
-          ..write('badgeType: $badgeType')
+          ..write('badgeType: $badgeType, ')
+          ..write('isPro: $isPro, ')
+          ..write('showWeekNumbers: $showWeekNumbers')
           ..write(')'))
         .toString();
   }
@@ -1819,6 +1894,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     digestEveningOn,
     digestEveningMin,
     badgeType,
+    isPro,
+    showWeekNumbers,
   );
   @override
   bool operator ==(Object other) =>
@@ -1834,7 +1911,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           other.digestMorningMin == this.digestMorningMin &&
           other.digestEveningOn == this.digestEveningOn &&
           other.digestEveningMin == this.digestEveningMin &&
-          other.badgeType == this.badgeType);
+          other.badgeType == this.badgeType &&
+          other.isPro == this.isPro &&
+          other.showWeekNumbers == this.showWeekNumbers);
 }
 
 class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
@@ -1849,6 +1928,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
   final Value<bool> digestEveningOn;
   final Value<int> digestEveningMin;
   final Value<int> badgeType;
+  final Value<bool> isPro;
+  final Value<bool> showWeekNumbers;
   final Value<int> rowid;
   const AppSettingsTableCompanion({
     this.id = const Value.absent(),
@@ -1862,6 +1943,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
     this.digestEveningOn = const Value.absent(),
     this.digestEveningMin = const Value.absent(),
     this.badgeType = const Value.absent(),
+    this.isPro = const Value.absent(),
+    this.showWeekNumbers = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   AppSettingsTableCompanion.insert({
@@ -1876,6 +1959,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
     this.digestEveningOn = const Value.absent(),
     this.digestEveningMin = const Value.absent(),
     this.badgeType = const Value.absent(),
+    this.isPro = const Value.absent(),
+    this.showWeekNumbers = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   static Insertable<SettingsRow> custom({
@@ -1890,6 +1975,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
     Expression<bool>? digestEveningOn,
     Expression<int>? digestEveningMin,
     Expression<int>? badgeType,
+    Expression<bool>? isPro,
+    Expression<bool>? showWeekNumbers,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1905,6 +1992,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
       if (digestEveningOn != null) 'digest_evening_on': digestEveningOn,
       if (digestEveningMin != null) 'digest_evening_min': digestEveningMin,
       if (badgeType != null) 'badge_type': badgeType,
+      if (isPro != null) 'is_pro': isPro,
+      if (showWeekNumbers != null) 'show_week_numbers': showWeekNumbers,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1921,6 +2010,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
     Value<bool>? digestEveningOn,
     Value<int>? digestEveningMin,
     Value<int>? badgeType,
+    Value<bool>? isPro,
+    Value<bool>? showWeekNumbers,
     Value<int>? rowid,
   }) {
     return AppSettingsTableCompanion(
@@ -1935,6 +2026,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
       digestEveningOn: digestEveningOn ?? this.digestEveningOn,
       digestEveningMin: digestEveningMin ?? this.digestEveningMin,
       badgeType: badgeType ?? this.badgeType,
+      isPro: isPro ?? this.isPro,
+      showWeekNumbers: showWeekNumbers ?? this.showWeekNumbers,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1975,6 +2068,12 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
     if (badgeType.present) {
       map['badge_type'] = Variable<int>(badgeType.value);
     }
+    if (isPro.present) {
+      map['is_pro'] = Variable<bool>(isPro.value);
+    }
+    if (showWeekNumbers.present) {
+      map['show_week_numbers'] = Variable<bool>(showWeekNumbers.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1995,6 +2094,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
           ..write('digestEveningOn: $digestEveningOn, ')
           ..write('digestEveningMin: $digestEveningMin, ')
           ..write('badgeType: $badgeType, ')
+          ..write('isPro: $isPro, ')
+          ..write('showWeekNumbers: $showWeekNumbers, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3832,6 +3933,8 @@ typedef $$AppSettingsTableTableCreateCompanionBuilder =
       Value<bool> digestEveningOn,
       Value<int> digestEveningMin,
       Value<int> badgeType,
+      Value<bool> isPro,
+      Value<bool> showWeekNumbers,
       Value<int> rowid,
     });
 typedef $$AppSettingsTableTableUpdateCompanionBuilder =
@@ -3847,6 +3950,8 @@ typedef $$AppSettingsTableTableUpdateCompanionBuilder =
       Value<bool> digestEveningOn,
       Value<int> digestEveningMin,
       Value<int> badgeType,
+      Value<bool> isPro,
+      Value<bool> showWeekNumbers,
       Value<int> rowid,
     });
 
@@ -3911,6 +4016,16 @@ class $$AppSettingsTableTableFilterComposer
 
   ColumnFilters<int> get badgeType => $composableBuilder(
     column: $table.badgeType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPro => $composableBuilder(
+    column: $table.isPro,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get showWeekNumbers => $composableBuilder(
+    column: $table.showWeekNumbers,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3978,6 +4093,16 @@ class $$AppSettingsTableTableOrderingComposer
     column: $table.badgeType,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get isPro => $composableBuilder(
+    column: $table.isPro,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get showWeekNumbers => $composableBuilder(
+    column: $table.showWeekNumbers,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableTableAnnotationComposer
@@ -4033,6 +4158,14 @@ class $$AppSettingsTableTableAnnotationComposer
 
   GeneratedColumn<int> get badgeType =>
       $composableBuilder(column: $table.badgeType, builder: (column) => column);
+
+  GeneratedColumn<bool> get isPro =>
+      $composableBuilder(column: $table.isPro, builder: (column) => column);
+
+  GeneratedColumn<bool> get showWeekNumbers => $composableBuilder(
+    column: $table.showWeekNumbers,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableTableManager
@@ -4079,6 +4212,8 @@ class $$AppSettingsTableTableTableManager
                 Value<bool> digestEveningOn = const Value.absent(),
                 Value<int> digestEveningMin = const Value.absent(),
                 Value<int> badgeType = const Value.absent(),
+                Value<bool> isPro = const Value.absent(),
+                Value<bool> showWeekNumbers = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsTableCompanion(
                 id: id,
@@ -4092,6 +4227,8 @@ class $$AppSettingsTableTableTableManager
                 digestEveningOn: digestEveningOn,
                 digestEveningMin: digestEveningMin,
                 badgeType: badgeType,
+                isPro: isPro,
+                showWeekNumbers: showWeekNumbers,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4107,6 +4244,8 @@ class $$AppSettingsTableTableTableManager
                 Value<bool> digestEveningOn = const Value.absent(),
                 Value<int> digestEveningMin = const Value.absent(),
                 Value<int> badgeType = const Value.absent(),
+                Value<bool> isPro = const Value.absent(),
+                Value<bool> showWeekNumbers = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsTableCompanion.insert(
                 id: id,
@@ -4120,6 +4259,8 @@ class $$AppSettingsTableTableTableManager
                 digestEveningOn: digestEveningOn,
                 digestEveningMin: digestEveningMin,
                 badgeType: badgeType,
+                isPro: isPro,
+                showWeekNumbers: showWeekNumbers,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

@@ -34,6 +34,10 @@ class AppSettingsTable extends Table {
   IntColumn get digestEveningMin => integer().withDefault(const Constant(20 * 60))();
   IntColumn get badgeType => integer().withDefault(const Constant(0))(); // 0 none,1 date,2 count
 
+  // M7: Pro entitlement + a Pro-gated feature.
+  BoolColumn get isPro => boolean().withDefault(const Constant(false))();
+  BoolColumn get showWeekNumbers => boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -97,7 +101,7 @@ class AppDatabase extends _$AppDatabase {
       : super(executor ?? driftDatabase(name: 'cally'));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -116,6 +120,10 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(appSettingsTable, appSettingsTable.digestEveningMin);
             await m.addColumn(appSettingsTable, appSettingsTable.badgeType);
             await m.createTable(deletedEvents);
+          }
+          if (from < 4) {
+            await m.addColumn(appSettingsTable, appSettingsTable.isPro);
+            await m.addColumn(appSettingsTable, appSettingsTable.showWeekNumbers);
           }
         },
       );

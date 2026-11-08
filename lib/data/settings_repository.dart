@@ -38,4 +38,11 @@ class SettingsRepository {
 
   Future<void> setBadgeType(BadgeType t) => db.upsertSettings(
       AppSettingsTableCompanion(id: const Value('app'), badgeType: Value(t.index)));
+
+  // M7
+  Future<void> setPro(bool v) => db.upsertSettings(
+      AppSettingsTableCompanion(id: const Value('app'), isPro: Value(v)));
+
+  Future<void> setShowWeekNumbers(bool v) => db.upsertSettings(
+      AppSettingsTableCompanion(id: const Value('app'), showWeekNumbers: Value(v)));
 }

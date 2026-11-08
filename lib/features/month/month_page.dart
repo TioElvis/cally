@@ -249,6 +249,8 @@ class _WeekdayRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final weekStart = ref.watch(weekStartProvider);
+    final showWeeks =
+        (ref.watch(settingsProvider).value ?? const AppSettings()).weekNumbersEnabled;
     final order = weekdayOrder(weekStart);
     // 2024-01-01 is a Monday (weekday 1); pick a date per weekday for its letter.
     final monday = DateTime(2024, 1, 1);
@@ -256,7 +258,9 @@ class _WeekdayRow extends ConsumerWidget {
       padding: const EdgeInsets.only(
           left: Tokens.gutterEdge, right: Tokens.gutterEdge, top: 2, bottom: 6),
       child: Row(
-        children: order.map((w) {
+        children: [
+          if (showWeeks) const SizedBox(width: weekColWidth),
+          ...order.map((w) {
           final date = monday.add(Duration(days: w - 1));
           final letter = DateFormat('EEEEE').format(date).toUpperCase();
           final isSunday = w == DateTime.sunday;
@@ -271,7 +275,8 @@ class _WeekdayRow extends ConsumerWidget {
               ),
             ),
           );
-        }).toList(),
+        }),
+        ],
       ),
     );
   }
