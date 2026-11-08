@@ -1,3 +1,20 @@
 .DS_Store
 minical-analysis/screenshots/*
 !minical-analysis/screenshots/.gitkeep
+
+# Secrets
+.env
+*.env
+!.env.example
+
+# Native secret config (provided on the Mac / CI, never committed)
+ios/Runner/GoogleService-Info.plist
+android/app/google-services.json
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+.packages
+# pubspec.lock IS committed for an app (reproducible builds)
