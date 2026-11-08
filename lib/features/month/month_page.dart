@@ -15,6 +15,8 @@ import '../notifications/notification_providers.dart';
 import '../widgets/deep_link.dart';
 import '../widgets/widget_providers.dart';
 import '../search/search_sheet.dart';
+import '../share/event_share.dart';
+import '../share/share_providers.dart';
 import '../settings/settings_page.dart';
 import 'month_grid_view.dart';
 import 'month_providers.dart';
@@ -292,6 +294,48 @@ class _DayAgenda extends ConsumerWidget {
       }
     }
 
+    Future<void> openActions(DayOccurrence occ) async {
+      final rows = ref.read(eventRowsProvider).value ?? const [];
+      final matches = rows.where((r) => r.id == occ.masterId);
+      if (matches.isEmpty) return;
+      final row = matches.first;
+      final use24h = ref.read(use24hProvider);
+      final share = ref.read(shareServiceProvider);
+      HapticFeedback.selectionClick();
+      final action = await showCupertinoModalPopup<String>(
+        context: context,
+        builder: (c) => CupertinoActionSheet(
+          title: Text(occ.title),
+          actions: [
+            CupertinoActionSheetAction(
+                onPressed: () => Navigator.pop(c, 'text'), child: const Text('Share as text')),
+            CupertinoActionSheetAction(
+                onPressed: () => Navigator.pop(c, 'ics'),
+                child: const Text('Share as calendar file (.ics)')),
+            CupertinoActionSheetAction(
+                onPressed: () => Navigator.pop(c, 'edit'), child: const Text('Edit')),
+            CupertinoActionSheetAction(
+                isDestructiveAction: true,
+                onPressed: () => Navigator.pop(c, 'delete'),
+                child: const Text('Delete')),
+          ],
+          cancelButton: CupertinoActionSheetAction(
+              onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+        ),
+      );
+      switch (action) {
+        case 'text':
+          await share.shareText(eventToText(occ, use24h,
+              location: row.location, notes: row.notes, url: row.url));
+        case 'ics':
+          await share.shareIcs(eventToIcs(row), '${_icsName(row.title)}.ics');
+        case 'edit':
+          if (context.mounted) await showEventEditor(context, EventDraft.fromRow(row));
+        case 'delete':
+          await ref.read(repositoryProvider).delete(row.id);
+      }
+    }
+
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -324,6 +368,7 @@ class _DayAgenda extends ConsumerWidget {
                 event: events[i],
                 use24h: ref.watch(use24hProvider),
                 onTap: () => openEditor(events[i]),
+                onLongPress: () => openActions(events[i]),
               ),
             ),
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
@@ -339,7 +384,13 @@ class _AgendaRow extends StatelessWidget {
   final DayOccurrence event;
   final bool use24h;
   final VoidCallback onTap;
-  const _AgendaRow({required this.event, required this.use24h, required this.onTap});
+  final VoidCallback onLongPress;
+  const _AgendaRow({
+    required this.event,
+    required this.use24h,
+    required this.onTap,
+    required this.onLongPress,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -350,6 +401,7 @@ class _AgendaRow extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
+      onLongPress: onLongPress,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: Tokens.gutter, vertical: 7),
         child: Row(
@@ -415,4 +467,11 @@ class _NewEventButton extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// A safe-ish file name for an exported .ics.
+String _icsName(String title) {
+  final cleaned = title.trim().replaceAll(RegExp(r'[^A-Za-z0-9 _-]'), '').trim();
+  final name = cleaned.isEmpty ? 'event' : cleaned.replaceAll(RegExp(r'\s+'), '_');
+  return name.length <= 40 ? name : name.substring(0, 40);
 }
