@@ -2,7 +2,6 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cally/core/time/iso_week.dart';
 import 'package:cally/data/db/database.dart';
-import 'package:cally/data/models.dart';
 import 'package:cally/data/settings_repository.dart';
 import 'package:cally/features/pro/pro.dart';
 
