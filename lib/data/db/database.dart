@@ -17,13 +17,47 @@ class Calendars extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-/// Single-row app settings (M2).
+/// Single-row app settings (M2 + M3).
 @DataClassName('SettingsRow')
 class AppSettingsTable extends Table {
   TextColumn get id => text().withDefault(const Constant('app'))();
   IntColumn get themeMode => integer().withDefault(const Constant(0))(); // 0 system,1 light,2 dark
   IntColumn get weekStart => integer().withDefault(const Constant(DateTime.monday))();
   BoolColumn get use24h => boolean().withDefault(const Constant(true))();
+
+  // M3: default alerts (minutes before; null = none), digest, badge.
+  IntColumn get defaultAlertTimed => integer().nullable()();
+  IntColumn get defaultAlertAllDay => integer().nullable()();
+  BoolColumn get digestMorningOn => boolean().withDefault(const Constant(false))();
+  IntColumn get digestMorningMin => integer().withDefault(const Constant(8 * 60))();
+  BoolColumn get digestEveningOn => boolean().withDefault(const Constant(false))();
+  IntColumn get digestEveningMin => integer().withDefault(const Constant(20 * 60))();
+  IntColumn get badgeType => integer().withDefault(const Constant(0))(); // 0 none,1 date,2 count
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Snapshot of an event taken when it is deleted, so it can be restored (M3).
+@DataClassName('DeletedEventRow')
+class DeletedEvents extends Table {
+  TextColumn get id => text()();
+  TextColumn get calendarId => text()();
+  TextColumn get title => text()();
+  BoolColumn get allDay => boolean()();
+  DateTimeColumn get start => dateTime()();
+  DateTimeColumn get end => dateTime()();
+  IntColumn get colorId => integer().nullable()();
+  TextColumn get location => text().nullable()();
+  TextColumn get url => text().nullable()();
+  TextColumn get notes => text().nullable()();
+  IntColumn get recFreq => integer().withDefault(const Constant(0))();
+  IntColumn get recInterval => integer().withDefault(const Constant(1))();
+  IntColumn get recEndKind => integer().withDefault(const Constant(0))();
+  DateTimeColumn get recUntil => dateTime().nullable()();
+  IntColumn get recCount => integer().nullable()();
+  IntColumn get alertMinutes => integer().nullable()();
+  DateTimeColumn get deletedAt => dateTime()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -57,13 +91,13 @@ class Events extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Calendars, Events, AppSettingsTable])
+@DriftDatabase(tables: [Calendars, Events, AppSettingsTable, DeletedEvents])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
       : super(executor ?? driftDatabase(name: 'cally'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -72,6 +106,16 @@ class AppDatabase extends _$AppDatabase {
           if (from < 2) {
             await m.addColumn(calendars, calendars.isVisible);
             await m.createTable(appSettingsTable);
+          }
+          if (from < 3) {
+            await m.addColumn(appSettingsTable, appSettingsTable.defaultAlertTimed);
+            await m.addColumn(appSettingsTable, appSettingsTable.defaultAlertAllDay);
+            await m.addColumn(appSettingsTable, appSettingsTable.digestMorningOn);
+            await m.addColumn(appSettingsTable, appSettingsTable.digestMorningMin);
+            await m.addColumn(appSettingsTable, appSettingsTable.digestEveningOn);
+            await m.addColumn(appSettingsTable, appSettingsTable.digestEveningMin);
+            await m.addColumn(appSettingsTable, appSettingsTable.badgeType);
+            await m.createTable(deletedEvents);
           }
         },
       );
@@ -91,6 +135,9 @@ class AppDatabase extends _$AppDatabase {
 
   Future<void> deleteEvent(String id) =>
       (delete(events)..where((e) => e.id.equals(id))).go();
+
+  Future<EventRow?> findEvent(String id) =>
+      (select(events)..where((e) => e.id.equals(id))).getSingleOrNull();
 
   Future<void> deleteEventsForCalendar(String calendarId) =>
       (delete(events)..where((e) => e.calendarId.equals(calendarId))).go();
@@ -119,4 +166,25 @@ class AppDatabase extends _$AppDatabase {
 
   Future<void> upsertSettings(AppSettingsTableCompanion c) =>
       into(appSettingsTable).insertOnConflictUpdate(c);
+
+  // --- deleted-events cache ---
+  Stream<List<DeletedEventRow>> watchDeleted() => (select(deletedEvents)
+        ..orderBy([(d) => OrderingTerm.desc(d.deletedAt)]))
+      .watch();
+
+  Future<void> insertDeleted(DeletedEventsCompanion d) =>
+      into(deletedEvents).insertOnConflictUpdate(d);
+
+  Future<DeletedEventRow?> takeDeleted(String id) async {
+    final row = await (select(deletedEvents)..where((d) => d.id.equals(id)))
+        .getSingleOrNull();
+    if (row != null) {
+      await (delete(deletedEvents)..where((d) => d.id.equals(id))).go();
+    }
+    return row;
+  }
+
+  Future<List<DeletedEventRow>> allDeleted() => select(deletedEvents).get();
+
+  Future<void> clearDeleted() => delete(deletedEvents).go();
 }

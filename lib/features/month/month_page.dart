@@ -9,6 +9,7 @@ import '../../core/time/formats.dart';
 import '../../core/time/month_grid.dart';
 import '../../data/models.dart';
 import '../event_editor/event_editor_sheet.dart';
+import '../notifications/notification_providers.dart';
 import '../search/search_sheet.dart';
 import '../settings/settings_page.dart';
 import 'month_grid_view.dart';
@@ -78,6 +79,7 @@ class _MonthPageState extends ConsumerState<MonthPage> {
   @override
   Widget build(BuildContext context) {
     ref.watch(seedProvider); // create defaults + samples on first run
+    ref.watch(notificationSchedulerProvider); // keep alarms + badge in sync
     final focused = ref.watch(focusedMonthProvider);
     final selected = ref.watch(selectedDayProvider);
     final isCurrentMonth = isSameMonth(focused, DateTime.now());

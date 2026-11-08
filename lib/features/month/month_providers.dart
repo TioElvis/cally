@@ -44,6 +44,10 @@ final calendarsProvider = StreamProvider<List<Calendar>>(
 final eventRowsProvider = StreamProvider<List<EventRow>>(
     (ref) => ref.watch(repositoryProvider).watchEvents());
 
+/// Snapshots of recently deleted events, newest first (restore cache).
+final deletedEventsProvider = StreamProvider<List<DeletedEventRow>>(
+    (ref) => ref.watch(repositoryProvider).watchDeleted());
+
 Map<String, int> _calColor(List<Calendar> cals) =>
     {for (final c in cals) c.id: c.colorId};
 

@@ -18,4 +18,24 @@ class SettingsRepository {
 
   Future<void> setUse24h(bool v) => db.upsertSettings(
       AppSettingsTableCompanion(id: const Value('app'), use24h: Value(v)));
+
+  // M3
+  Future<void> setDefaultAlertTimed(int? minutes) => db.upsertSettings(
+      AppSettingsTableCompanion(id: const Value('app'), defaultAlertTimed: Value(minutes)));
+
+  Future<void> setDefaultAlertAllDay(int? minutes) => db.upsertSettings(
+      AppSettingsTableCompanion(id: const Value('app'), defaultAlertAllDay: Value(minutes)));
+
+  Future<void> setMorningDigest(bool on, int minutes) => db.upsertSettings(AppSettingsTableCompanion(
+      id: const Value('app'),
+      digestMorningOn: Value(on),
+      digestMorningMin: Value(minutes)));
+
+  Future<void> setEveningDigest(bool on, int minutes) => db.upsertSettings(AppSettingsTableCompanion(
+      id: const Value('app'),
+      digestEveningOn: Value(on),
+      digestEveningMin: Value(minutes)));
+
+  Future<void> setBadgeType(BadgeType t) => db.upsertSettings(
+      AppSettingsTableCompanion(id: const Value('app'), badgeType: Value(t.index)));
 }

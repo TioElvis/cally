@@ -8,7 +8,7 @@ See [`docs/PLAN.md`](docs/PLAN.md) for architecture and the roadmap, and
 [`docs/DESIGN.md`](docs/DESIGN.md) for the design system.
 
 ## Status
-**M2 — organise & find** (local): manage calendars (visibility, default, colour/name, reorder, create/delete), search events by title/location/notes with a calendar filter, and a Settings screen (theme light/dark/system, first day of week, 24-hour time). Built on M1 (local drift store, editor, recurrence).
+**M3 — notifications** (local): per-event and default alerts, morning/evening digests and an app-icon badge, planned from events + settings behind a notification port (real `flutter_local_notifications` on mobile, a fake on Linux/dev). Plus a Restore-events cache (undo deletes). Built on M0–M2.
 grid with today + selected-day highlighting, three-tone event chips, multi-day
 spans and a selected-day agenda. No external services yet (everything is local;
 device calendars, iCloud and purchases come in a later milestone).

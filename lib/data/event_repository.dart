@@ -39,7 +39,66 @@ class EventRepository {
     ));
   }
 
-  Future<void> delete(String id) => db.deleteEvent(id);
+  /// Delete an event, keeping a snapshot in the restore cache first.
+  Future<void> delete(String id) async {
+    final row = await db.findEvent(id);
+    if (row != null) {
+      await db.insertDeleted(DeletedEventsCompanion.insert(
+        id: row.id,
+        calendarId: row.calendarId,
+        title: row.title,
+        allDay: row.allDay,
+        start: row.start,
+        end: row.end,
+        colorId: Value(row.colorId),
+        location: Value(row.location),
+        url: Value(row.url),
+        notes: Value(row.notes),
+        recFreq: Value(row.recFreq),
+        recInterval: Value(row.recInterval),
+        recEndKind: Value(row.recEndKind),
+        recUntil: Value(row.recUntil),
+        recCount: Value(row.recCount),
+        alertMinutes: Value(row.alertMinutes),
+        deletedAt: DateTime.now(),
+      ));
+    }
+    await db.deleteEvent(id);
+  }
+
+  // --- restore cache ---
+  Stream<List<DeletedEventRow>> watchDeleted() => db.watchDeleted();
+
+  Future<void> restore(String id) async {
+    final d = await db.takeDeleted(id);
+    if (d == null) return;
+    await db.upsertEvent(EventsCompanion.insert(
+      id: d.id,
+      calendarId: d.calendarId,
+      title: d.title,
+      start: d.start,
+      end: d.end,
+      allDay: Value(d.allDay),
+      colorId: Value(d.colorId),
+      location: Value(d.location),
+      url: Value(d.url),
+      notes: Value(d.notes),
+      recFreq: Value(d.recFreq),
+      recInterval: Value(d.recInterval),
+      recEndKind: Value(d.recEndKind),
+      recUntil: Value(d.recUntil),
+      recCount: Value(d.recCount),
+      alertMinutes: Value(d.alertMinutes),
+    ));
+  }
+
+  Future<void> restoreAll() async {
+    for (final d in await db.allDeleted()) {
+      await restore(d.id);
+    }
+  }
+
+  Future<void> clearDeleted() => db.clearDeleted();
 
   // --- calendars ---
   Future<void> setCalendarVisible(String id, bool visible) =>

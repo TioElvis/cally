@@ -32,15 +32,34 @@ class Calendar {
 /// Theme preference.
 enum ThemePref { system, light, dark }
 
-/// App-wide settings (M2).
+/// App-icon badge content.
+enum BadgeType { none, date, count }
+
+/// App-wide settings (M2 + M3).
 class AppSettings {
   final ThemePref themeMode;
   final int weekStart; // DateTime.monday..sunday
   final bool use24h;
+  // M3
+  final int? defaultAlertTimed; // minutes before; null = none
+  final int? defaultAlertAllDay;
+  final bool digestMorningOn;
+  final int digestMorningMin; // minutes from midnight
+  final bool digestEveningOn;
+  final int digestEveningMin;
+  final BadgeType badgeType;
+
   const AppSettings({
     this.themeMode = ThemePref.system,
     this.weekStart = DateTime.monday,
     this.use24h = true,
+    this.defaultAlertTimed,
+    this.defaultAlertAllDay,
+    this.digestMorningOn = false,
+    this.digestMorningMin = 8 * 60,
+    this.digestEveningOn = false,
+    this.digestEveningMin = 20 * 60,
+    this.badgeType = BadgeType.none,
   });
 
   factory AppSettings.from(SettingsRow? r) => r == null
@@ -49,6 +68,13 @@ class AppSettings {
           themeMode: ThemePref.values[r.themeMode.clamp(0, ThemePref.values.length - 1)],
           weekStart: r.weekStart,
           use24h: r.use24h,
+          defaultAlertTimed: r.defaultAlertTimed,
+          defaultAlertAllDay: r.defaultAlertAllDay,
+          digestMorningOn: r.digestMorningOn,
+          digestMorningMin: r.digestMorningMin,
+          digestEveningOn: r.digestEveningOn,
+          digestEveningMin: r.digestEveningMin,
+          badgeType: BadgeType.values[r.badgeType.clamp(0, BadgeType.values.length - 1)],
         );
 }
 
