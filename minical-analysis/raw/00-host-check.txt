@@ -1,0 +1,31 @@
+# Host check — 2026-11-08T15:24Z
+
+$ uname -m
+x86_64
+$ sysctl -n machdep.cpu.brand_string
+Intel(R) Core(TM) i5-8210Y CPU @ 1.60GHz
+$ sw_vers
+ProductName:		macOS
+ProductVersion:		14.8.7
+BuildVersion:		23J520
+
+$ ls /Applications
+CapCut.app
+Claude.app
+CodeMeter.app
+Google Chrome.app
+Graphisoft
+Notion Web Clipper.app
+Notion.app
+Safari.app
+Utilities
+Visual Studio Code.app
+WIBUKEY
+Warp.app
+WhatsApp.app
+
+$ mdfind -name minical
+(no results)
+
+$ find /Applications ~/Applications -maxdepth 3 -iname "*minical*"
+(no results)
