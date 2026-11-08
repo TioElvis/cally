@@ -1,0 +1,2120 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'database.dart';
+
+// ignore_for_file: type=lint
+class $CalendarsTable extends Calendars
+    with TableInfo<$CalendarsTable, CalendarRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CalendarsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _colorIdMeta = const VerificationMeta(
+    'colorId',
+  );
+  @override
+  late final GeneratedColumn<int> colorId = GeneratedColumn<int>(
+    'color_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isDefaultMeta = const VerificationMeta(
+    'isDefault',
+  );
+  @override
+  late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>(
+    'is_default',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_default" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _displayOrderMeta = const VerificationMeta(
+    'displayOrder',
+  );
+  @override
+  late final GeneratedColumn<int> displayOrder = GeneratedColumn<int>(
+    'display_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    title,
+    colorId,
+    isDefault,
+    displayOrder,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'calendars';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CalendarRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('color_id')) {
+      context.handle(
+        _colorIdMeta,
+        colorId.isAcceptableOrUnknown(data['color_id']!, _colorIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_colorIdMeta);
+    }
+    if (data.containsKey('is_default')) {
+      context.handle(
+        _isDefaultMeta,
+        isDefault.isAcceptableOrUnknown(data['is_default']!, _isDefaultMeta),
+      );
+    }
+    if (data.containsKey('display_order')) {
+      context.handle(
+        _displayOrderMeta,
+        displayOrder.isAcceptableOrUnknown(
+          data['display_order']!,
+          _displayOrderMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CalendarRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CalendarRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      colorId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}color_id'],
+      )!,
+      isDefault: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_default'],
+      )!,
+      displayOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}display_order'],
+      )!,
+    );
+  }
+
+  @override
+  $CalendarsTable createAlias(String alias) {
+    return $CalendarsTable(attachedDatabase, alias);
+  }
+}
+
+class CalendarRow extends DataClass implements Insertable<CalendarRow> {
+  final String id;
+  final String title;
+  final int colorId;
+  final bool isDefault;
+  final int displayOrder;
+  const CalendarRow({
+    required this.id,
+    required this.title,
+    required this.colorId,
+    required this.isDefault,
+    required this.displayOrder,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['title'] = Variable<String>(title);
+    map['color_id'] = Variable<int>(colorId);
+    map['is_default'] = Variable<bool>(isDefault);
+    map['display_order'] = Variable<int>(displayOrder);
+    return map;
+  }
+
+  CalendarsCompanion toCompanion(bool nullToAbsent) {
+    return CalendarsCompanion(
+      id: Value(id),
+      title: Value(title),
+      colorId: Value(colorId),
+      isDefault: Value(isDefault),
+      displayOrder: Value(displayOrder),
+    );
+  }
+
+  factory CalendarRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CalendarRow(
+      id: serializer.fromJson<String>(json['id']),
+      title: serializer.fromJson<String>(json['title']),
+      colorId: serializer.fromJson<int>(json['colorId']),
+      isDefault: serializer.fromJson<bool>(json['isDefault']),
+      displayOrder: serializer.fromJson<int>(json['displayOrder']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'title': serializer.toJson<String>(title),
+      'colorId': serializer.toJson<int>(colorId),
+      'isDefault': serializer.toJson<bool>(isDefault),
+      'displayOrder': serializer.toJson<int>(displayOrder),
+    };
+  }
+
+  CalendarRow copyWith({
+    String? id,
+    String? title,
+    int? colorId,
+    bool? isDefault,
+    int? displayOrder,
+  }) => CalendarRow(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    colorId: colorId ?? this.colorId,
+    isDefault: isDefault ?? this.isDefault,
+    displayOrder: displayOrder ?? this.displayOrder,
+  );
+  CalendarRow copyWithCompanion(CalendarsCompanion data) {
+    return CalendarRow(
+      id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      colorId: data.colorId.present ? data.colorId.value : this.colorId,
+      isDefault: data.isDefault.present ? data.isDefault.value : this.isDefault,
+      displayOrder: data.displayOrder.present
+          ? data.displayOrder.value
+          : this.displayOrder,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CalendarRow(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('colorId: $colorId, ')
+          ..write('isDefault: $isDefault, ')
+          ..write('displayOrder: $displayOrder')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, title, colorId, isDefault, displayOrder);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CalendarRow &&
+          other.id == this.id &&
+          other.title == this.title &&
+          other.colorId == this.colorId &&
+          other.isDefault == this.isDefault &&
+          other.displayOrder == this.displayOrder);
+}
+
+class CalendarsCompanion extends UpdateCompanion<CalendarRow> {
+  final Value<String> id;
+  final Value<String> title;
+  final Value<int> colorId;
+  final Value<bool> isDefault;
+  final Value<int> displayOrder;
+  final Value<int> rowid;
+  const CalendarsCompanion({
+    this.id = const Value.absent(),
+    this.title = const Value.absent(),
+    this.colorId = const Value.absent(),
+    this.isDefault = const Value.absent(),
+    this.displayOrder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CalendarsCompanion.insert({
+    required String id,
+    required String title,
+    required int colorId,
+    this.isDefault = const Value.absent(),
+    this.displayOrder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       title = Value(title),
+       colorId = Value(colorId);
+  static Insertable<CalendarRow> custom({
+    Expression<String>? id,
+    Expression<String>? title,
+    Expression<int>? colorId,
+    Expression<bool>? isDefault,
+    Expression<int>? displayOrder,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (title != null) 'title': title,
+      if (colorId != null) 'color_id': colorId,
+      if (isDefault != null) 'is_default': isDefault,
+      if (displayOrder != null) 'display_order': displayOrder,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CalendarsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? title,
+    Value<int>? colorId,
+    Value<bool>? isDefault,
+    Value<int>? displayOrder,
+    Value<int>? rowid,
+  }) {
+    return CalendarsCompanion(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      colorId: colorId ?? this.colorId,
+      isDefault: isDefault ?? this.isDefault,
+      displayOrder: displayOrder ?? this.displayOrder,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (colorId.present) {
+      map['color_id'] = Variable<int>(colorId.value);
+    }
+    if (isDefault.present) {
+      map['is_default'] = Variable<bool>(isDefault.value);
+    }
+    if (displayOrder.present) {
+      map['display_order'] = Variable<int>(displayOrder.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CalendarsCompanion(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('colorId: $colorId, ')
+          ..write('isDefault: $isDefault, ')
+          ..write('displayOrder: $displayOrder, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $EventsTable extends Events with TableInfo<$EventsTable, EventRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _calendarIdMeta = const VerificationMeta(
+    'calendarId',
+  );
+  @override
+  late final GeneratedColumn<String> calendarId = GeneratedColumn<String>(
+    'calendar_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES calendars (id)',
+    ),
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _allDayMeta = const VerificationMeta('allDay');
+  @override
+  late final GeneratedColumn<bool> allDay = GeneratedColumn<bool>(
+    'all_day',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("all_day" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _startMeta = const VerificationMeta('start');
+  @override
+  late final GeneratedColumn<DateTime> start = GeneratedColumn<DateTime>(
+    'start',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endMeta = const VerificationMeta('end');
+  @override
+  late final GeneratedColumn<DateTime> end = GeneratedColumn<DateTime>(
+    'end',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _colorIdMeta = const VerificationMeta(
+    'colorId',
+  );
+  @override
+  late final GeneratedColumn<int> colorId = GeneratedColumn<int>(
+    'color_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _locationMeta = const VerificationMeta(
+    'location',
+  );
+  @override
+  late final GeneratedColumn<String> location = GeneratedColumn<String>(
+    'location',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _urlMeta = const VerificationMeta('url');
+  @override
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+    'url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _recFreqMeta = const VerificationMeta(
+    'recFreq',
+  );
+  @override
+  late final GeneratedColumn<int> recFreq = GeneratedColumn<int>(
+    'rec_freq',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _recIntervalMeta = const VerificationMeta(
+    'recInterval',
+  );
+  @override
+  late final GeneratedColumn<int> recInterval = GeneratedColumn<int>(
+    'rec_interval',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _recEndKindMeta = const VerificationMeta(
+    'recEndKind',
+  );
+  @override
+  late final GeneratedColumn<int> recEndKind = GeneratedColumn<int>(
+    'rec_end_kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _recUntilMeta = const VerificationMeta(
+    'recUntil',
+  );
+  @override
+  late final GeneratedColumn<DateTime> recUntil = GeneratedColumn<DateTime>(
+    'rec_until',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _recCountMeta = const VerificationMeta(
+    'recCount',
+  );
+  @override
+  late final GeneratedColumn<int> recCount = GeneratedColumn<int>(
+    'rec_count',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _alertMinutesMeta = const VerificationMeta(
+    'alertMinutes',
+  );
+  @override
+  late final GeneratedColumn<int> alertMinutes = GeneratedColumn<int>(
+    'alert_minutes',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    calendarId,
+    title,
+    allDay,
+    start,
+    end,
+    colorId,
+    location,
+    url,
+    notes,
+    recFreq,
+    recInterval,
+    recEndKind,
+    recUntil,
+    recCount,
+    alertMinutes,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<EventRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('calendar_id')) {
+      context.handle(
+        _calendarIdMeta,
+        calendarId.isAcceptableOrUnknown(data['calendar_id']!, _calendarIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_calendarIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('all_day')) {
+      context.handle(
+        _allDayMeta,
+        allDay.isAcceptableOrUnknown(data['all_day']!, _allDayMeta),
+      );
+    }
+    if (data.containsKey('start')) {
+      context.handle(
+        _startMeta,
+        start.isAcceptableOrUnknown(data['start']!, _startMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startMeta);
+    }
+    if (data.containsKey('end')) {
+      context.handle(
+        _endMeta,
+        end.isAcceptableOrUnknown(data['end']!, _endMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_endMeta);
+    }
+    if (data.containsKey('color_id')) {
+      context.handle(
+        _colorIdMeta,
+        colorId.isAcceptableOrUnknown(data['color_id']!, _colorIdMeta),
+      );
+    }
+    if (data.containsKey('location')) {
+      context.handle(
+        _locationMeta,
+        location.isAcceptableOrUnknown(data['location']!, _locationMeta),
+      );
+    }
+    if (data.containsKey('url')) {
+      context.handle(
+        _urlMeta,
+        url.isAcceptableOrUnknown(data['url']!, _urlMeta),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('rec_freq')) {
+      context.handle(
+        _recFreqMeta,
+        recFreq.isAcceptableOrUnknown(data['rec_freq']!, _recFreqMeta),
+      );
+    }
+    if (data.containsKey('rec_interval')) {
+      context.handle(
+        _recIntervalMeta,
+        recInterval.isAcceptableOrUnknown(
+          data['rec_interval']!,
+          _recIntervalMeta,
+        ),
+      );
+    }
+    if (data.containsKey('rec_end_kind')) {
+      context.handle(
+        _recEndKindMeta,
+        recEndKind.isAcceptableOrUnknown(
+          data['rec_end_kind']!,
+          _recEndKindMeta,
+        ),
+      );
+    }
+    if (data.containsKey('rec_until')) {
+      context.handle(
+        _recUntilMeta,
+        recUntil.isAcceptableOrUnknown(data['rec_until']!, _recUntilMeta),
+      );
+    }
+    if (data.containsKey('rec_count')) {
+      context.handle(
+        _recCountMeta,
+        recCount.isAcceptableOrUnknown(data['rec_count']!, _recCountMeta),
+      );
+    }
+    if (data.containsKey('alert_minutes')) {
+      context.handle(
+        _alertMinutesMeta,
+        alertMinutes.isAcceptableOrUnknown(
+          data['alert_minutes']!,
+          _alertMinutesMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  EventRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EventRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      calendarId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}calendar_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      allDay: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}all_day'],
+      )!,
+      start: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}start'],
+      )!,
+      end: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}end'],
+      )!,
+      colorId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}color_id'],
+      ),
+      location: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}location'],
+      ),
+      url: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}url'],
+      ),
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      recFreq: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rec_freq'],
+      )!,
+      recInterval: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rec_interval'],
+      )!,
+      recEndKind: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rec_end_kind'],
+      )!,
+      recUntil: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}rec_until'],
+      ),
+      recCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rec_count'],
+      ),
+      alertMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}alert_minutes'],
+      ),
+    );
+  }
+
+  @override
+  $EventsTable createAlias(String alias) {
+    return $EventsTable(attachedDatabase, alias);
+  }
+}
+
+class EventRow extends DataClass implements Insertable<EventRow> {
+  final String id;
+  final String calendarId;
+  final String title;
+  final bool allDay;
+  final DateTime start;
+  final DateTime end;
+  final int? colorId;
+  final String? location;
+  final String? url;
+  final String? notes;
+  final int recFreq;
+  final int recInterval;
+  final int recEndKind;
+  final DateTime? recUntil;
+  final int? recCount;
+  final int? alertMinutes;
+  const EventRow({
+    required this.id,
+    required this.calendarId,
+    required this.title,
+    required this.allDay,
+    required this.start,
+    required this.end,
+    this.colorId,
+    this.location,
+    this.url,
+    this.notes,
+    required this.recFreq,
+    required this.recInterval,
+    required this.recEndKind,
+    this.recUntil,
+    this.recCount,
+    this.alertMinutes,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['calendar_id'] = Variable<String>(calendarId);
+    map['title'] = Variable<String>(title);
+    map['all_day'] = Variable<bool>(allDay);
+    map['start'] = Variable<DateTime>(start);
+    map['end'] = Variable<DateTime>(end);
+    if (!nullToAbsent || colorId != null) {
+      map['color_id'] = Variable<int>(colorId);
+    }
+    if (!nullToAbsent || location != null) {
+      map['location'] = Variable<String>(location);
+    }
+    if (!nullToAbsent || url != null) {
+      map['url'] = Variable<String>(url);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['rec_freq'] = Variable<int>(recFreq);
+    map['rec_interval'] = Variable<int>(recInterval);
+    map['rec_end_kind'] = Variable<int>(recEndKind);
+    if (!nullToAbsent || recUntil != null) {
+      map['rec_until'] = Variable<DateTime>(recUntil);
+    }
+    if (!nullToAbsent || recCount != null) {
+      map['rec_count'] = Variable<int>(recCount);
+    }
+    if (!nullToAbsent || alertMinutes != null) {
+      map['alert_minutes'] = Variable<int>(alertMinutes);
+    }
+    return map;
+  }
+
+  EventsCompanion toCompanion(bool nullToAbsent) {
+    return EventsCompanion(
+      id: Value(id),
+      calendarId: Value(calendarId),
+      title: Value(title),
+      allDay: Value(allDay),
+      start: Value(start),
+      end: Value(end),
+      colorId: colorId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(colorId),
+      location: location == null && nullToAbsent
+          ? const Value.absent()
+          : Value(location),
+      url: url == null && nullToAbsent ? const Value.absent() : Value(url),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      recFreq: Value(recFreq),
+      recInterval: Value(recInterval),
+      recEndKind: Value(recEndKind),
+      recUntil: recUntil == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recUntil),
+      recCount: recCount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recCount),
+      alertMinutes: alertMinutes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(alertMinutes),
+    );
+  }
+
+  factory EventRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EventRow(
+      id: serializer.fromJson<String>(json['id']),
+      calendarId: serializer.fromJson<String>(json['calendarId']),
+      title: serializer.fromJson<String>(json['title']),
+      allDay: serializer.fromJson<bool>(json['allDay']),
+      start: serializer.fromJson<DateTime>(json['start']),
+      end: serializer.fromJson<DateTime>(json['end']),
+      colorId: serializer.fromJson<int?>(json['colorId']),
+      location: serializer.fromJson<String?>(json['location']),
+      url: serializer.fromJson<String?>(json['url']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      recFreq: serializer.fromJson<int>(json['recFreq']),
+      recInterval: serializer.fromJson<int>(json['recInterval']),
+      recEndKind: serializer.fromJson<int>(json['recEndKind']),
+      recUntil: serializer.fromJson<DateTime?>(json['recUntil']),
+      recCount: serializer.fromJson<int?>(json['recCount']),
+      alertMinutes: serializer.fromJson<int?>(json['alertMinutes']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'calendarId': serializer.toJson<String>(calendarId),
+      'title': serializer.toJson<String>(title),
+      'allDay': serializer.toJson<bool>(allDay),
+      'start': serializer.toJson<DateTime>(start),
+      'end': serializer.toJson<DateTime>(end),
+      'colorId': serializer.toJson<int?>(colorId),
+      'location': serializer.toJson<String?>(location),
+      'url': serializer.toJson<String?>(url),
+      'notes': serializer.toJson<String?>(notes),
+      'recFreq': serializer.toJson<int>(recFreq),
+      'recInterval': serializer.toJson<int>(recInterval),
+      'recEndKind': serializer.toJson<int>(recEndKind),
+      'recUntil': serializer.toJson<DateTime?>(recUntil),
+      'recCount': serializer.toJson<int?>(recCount),
+      'alertMinutes': serializer.toJson<int?>(alertMinutes),
+    };
+  }
+
+  EventRow copyWith({
+    String? id,
+    String? calendarId,
+    String? title,
+    bool? allDay,
+    DateTime? start,
+    DateTime? end,
+    Value<int?> colorId = const Value.absent(),
+    Value<String?> location = const Value.absent(),
+    Value<String?> url = const Value.absent(),
+    Value<String?> notes = const Value.absent(),
+    int? recFreq,
+    int? recInterval,
+    int? recEndKind,
+    Value<DateTime?> recUntil = const Value.absent(),
+    Value<int?> recCount = const Value.absent(),
+    Value<int?> alertMinutes = const Value.absent(),
+  }) => EventRow(
+    id: id ?? this.id,
+    calendarId: calendarId ?? this.calendarId,
+    title: title ?? this.title,
+    allDay: allDay ?? this.allDay,
+    start: start ?? this.start,
+    end: end ?? this.end,
+    colorId: colorId.present ? colorId.value : this.colorId,
+    location: location.present ? location.value : this.location,
+    url: url.present ? url.value : this.url,
+    notes: notes.present ? notes.value : this.notes,
+    recFreq: recFreq ?? this.recFreq,
+    recInterval: recInterval ?? this.recInterval,
+    recEndKind: recEndKind ?? this.recEndKind,
+    recUntil: recUntil.present ? recUntil.value : this.recUntil,
+    recCount: recCount.present ? recCount.value : this.recCount,
+    alertMinutes: alertMinutes.present ? alertMinutes.value : this.alertMinutes,
+  );
+  EventRow copyWithCompanion(EventsCompanion data) {
+    return EventRow(
+      id: data.id.present ? data.id.value : this.id,
+      calendarId: data.calendarId.present
+          ? data.calendarId.value
+          : this.calendarId,
+      title: data.title.present ? data.title.value : this.title,
+      allDay: data.allDay.present ? data.allDay.value : this.allDay,
+      start: data.start.present ? data.start.value : this.start,
+      end: data.end.present ? data.end.value : this.end,
+      colorId: data.colorId.present ? data.colorId.value : this.colorId,
+      location: data.location.present ? data.location.value : this.location,
+      url: data.url.present ? data.url.value : this.url,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      recFreq: data.recFreq.present ? data.recFreq.value : this.recFreq,
+      recInterval: data.recInterval.present
+          ? data.recInterval.value
+          : this.recInterval,
+      recEndKind: data.recEndKind.present
+          ? data.recEndKind.value
+          : this.recEndKind,
+      recUntil: data.recUntil.present ? data.recUntil.value : this.recUntil,
+      recCount: data.recCount.present ? data.recCount.value : this.recCount,
+      alertMinutes: data.alertMinutes.present
+          ? data.alertMinutes.value
+          : this.alertMinutes,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EventRow(')
+          ..write('id: $id, ')
+          ..write('calendarId: $calendarId, ')
+          ..write('title: $title, ')
+          ..write('allDay: $allDay, ')
+          ..write('start: $start, ')
+          ..write('end: $end, ')
+          ..write('colorId: $colorId, ')
+          ..write('location: $location, ')
+          ..write('url: $url, ')
+          ..write('notes: $notes, ')
+          ..write('recFreq: $recFreq, ')
+          ..write('recInterval: $recInterval, ')
+          ..write('recEndKind: $recEndKind, ')
+          ..write('recUntil: $recUntil, ')
+          ..write('recCount: $recCount, ')
+          ..write('alertMinutes: $alertMinutes')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    calendarId,
+    title,
+    allDay,
+    start,
+    end,
+    colorId,
+    location,
+    url,
+    notes,
+    recFreq,
+    recInterval,
+    recEndKind,
+    recUntil,
+    recCount,
+    alertMinutes,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EventRow &&
+          other.id == this.id &&
+          other.calendarId == this.calendarId &&
+          other.title == this.title &&
+          other.allDay == this.allDay &&
+          other.start == this.start &&
+          other.end == this.end &&
+          other.colorId == this.colorId &&
+          other.location == this.location &&
+          other.url == this.url &&
+          other.notes == this.notes &&
+          other.recFreq == this.recFreq &&
+          other.recInterval == this.recInterval &&
+          other.recEndKind == this.recEndKind &&
+          other.recUntil == this.recUntil &&
+          other.recCount == this.recCount &&
+          other.alertMinutes == this.alertMinutes);
+}
+
+class EventsCompanion extends UpdateCompanion<EventRow> {
+  final Value<String> id;
+  final Value<String> calendarId;
+  final Value<String> title;
+  final Value<bool> allDay;
+  final Value<DateTime> start;
+  final Value<DateTime> end;
+  final Value<int?> colorId;
+  final Value<String?> location;
+  final Value<String?> url;
+  final Value<String?> notes;
+  final Value<int> recFreq;
+  final Value<int> recInterval;
+  final Value<int> recEndKind;
+  final Value<DateTime?> recUntil;
+  final Value<int?> recCount;
+  final Value<int?> alertMinutes;
+  final Value<int> rowid;
+  const EventsCompanion({
+    this.id = const Value.absent(),
+    this.calendarId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.allDay = const Value.absent(),
+    this.start = const Value.absent(),
+    this.end = const Value.absent(),
+    this.colorId = const Value.absent(),
+    this.location = const Value.absent(),
+    this.url = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.recFreq = const Value.absent(),
+    this.recInterval = const Value.absent(),
+    this.recEndKind = const Value.absent(),
+    this.recUntil = const Value.absent(),
+    this.recCount = const Value.absent(),
+    this.alertMinutes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  EventsCompanion.insert({
+    required String id,
+    required String calendarId,
+    required String title,
+    this.allDay = const Value.absent(),
+    required DateTime start,
+    required DateTime end,
+    this.colorId = const Value.absent(),
+    this.location = const Value.absent(),
+    this.url = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.recFreq = const Value.absent(),
+    this.recInterval = const Value.absent(),
+    this.recEndKind = const Value.absent(),
+    this.recUntil = const Value.absent(),
+    this.recCount = const Value.absent(),
+    this.alertMinutes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       calendarId = Value(calendarId),
+       title = Value(title),
+       start = Value(start),
+       end = Value(end);
+  static Insertable<EventRow> custom({
+    Expression<String>? id,
+    Expression<String>? calendarId,
+    Expression<String>? title,
+    Expression<bool>? allDay,
+    Expression<DateTime>? start,
+    Expression<DateTime>? end,
+    Expression<int>? colorId,
+    Expression<String>? location,
+    Expression<String>? url,
+    Expression<String>? notes,
+    Expression<int>? recFreq,
+    Expression<int>? recInterval,
+    Expression<int>? recEndKind,
+    Expression<DateTime>? recUntil,
+    Expression<int>? recCount,
+    Expression<int>? alertMinutes,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (calendarId != null) 'calendar_id': calendarId,
+      if (title != null) 'title': title,
+      if (allDay != null) 'all_day': allDay,
+      if (start != null) 'start': start,
+      if (end != null) 'end': end,
+      if (colorId != null) 'color_id': colorId,
+      if (location != null) 'location': location,
+      if (url != null) 'url': url,
+      if (notes != null) 'notes': notes,
+      if (recFreq != null) 'rec_freq': recFreq,
+      if (recInterval != null) 'rec_interval': recInterval,
+      if (recEndKind != null) 'rec_end_kind': recEndKind,
+      if (recUntil != null) 'rec_until': recUntil,
+      if (recCount != null) 'rec_count': recCount,
+      if (alertMinutes != null) 'alert_minutes': alertMinutes,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  EventsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? calendarId,
+    Value<String>? title,
+    Value<bool>? allDay,
+    Value<DateTime>? start,
+    Value<DateTime>? end,
+    Value<int?>? colorId,
+    Value<String?>? location,
+    Value<String?>? url,
+    Value<String?>? notes,
+    Value<int>? recFreq,
+    Value<int>? recInterval,
+    Value<int>? recEndKind,
+    Value<DateTime?>? recUntil,
+    Value<int?>? recCount,
+    Value<int?>? alertMinutes,
+    Value<int>? rowid,
+  }) {
+    return EventsCompanion(
+      id: id ?? this.id,
+      calendarId: calendarId ?? this.calendarId,
+      title: title ?? this.title,
+      allDay: allDay ?? this.allDay,
+      start: start ?? this.start,
+      end: end ?? this.end,
+      colorId: colorId ?? this.colorId,
+      location: location ?? this.location,
+      url: url ?? this.url,
+      notes: notes ?? this.notes,
+      recFreq: recFreq ?? this.recFreq,
+      recInterval: recInterval ?? this.recInterval,
+      recEndKind: recEndKind ?? this.recEndKind,
+      recUntil: recUntil ?? this.recUntil,
+      recCount: recCount ?? this.recCount,
+      alertMinutes: alertMinutes ?? this.alertMinutes,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (calendarId.present) {
+      map['calendar_id'] = Variable<String>(calendarId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (allDay.present) {
+      map['all_day'] = Variable<bool>(allDay.value);
+    }
+    if (start.present) {
+      map['start'] = Variable<DateTime>(start.value);
+    }
+    if (end.present) {
+      map['end'] = Variable<DateTime>(end.value);
+    }
+    if (colorId.present) {
+      map['color_id'] = Variable<int>(colorId.value);
+    }
+    if (location.present) {
+      map['location'] = Variable<String>(location.value);
+    }
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (recFreq.present) {
+      map['rec_freq'] = Variable<int>(recFreq.value);
+    }
+    if (recInterval.present) {
+      map['rec_interval'] = Variable<int>(recInterval.value);
+    }
+    if (recEndKind.present) {
+      map['rec_end_kind'] = Variable<int>(recEndKind.value);
+    }
+    if (recUntil.present) {
+      map['rec_until'] = Variable<DateTime>(recUntil.value);
+    }
+    if (recCount.present) {
+      map['rec_count'] = Variable<int>(recCount.value);
+    }
+    if (alertMinutes.present) {
+      map['alert_minutes'] = Variable<int>(alertMinutes.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EventsCompanion(')
+          ..write('id: $id, ')
+          ..write('calendarId: $calendarId, ')
+          ..write('title: $title, ')
+          ..write('allDay: $allDay, ')
+          ..write('start: $start, ')
+          ..write('end: $end, ')
+          ..write('colorId: $colorId, ')
+          ..write('location: $location, ')
+          ..write('url: $url, ')
+          ..write('notes: $notes, ')
+          ..write('recFreq: $recFreq, ')
+          ..write('recInterval: $recInterval, ')
+          ..write('recEndKind: $recEndKind, ')
+          ..write('recUntil: $recUntil, ')
+          ..write('recCount: $recCount, ')
+          ..write('alertMinutes: $alertMinutes, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+abstract class _$AppDatabase extends GeneratedDatabase {
+  _$AppDatabase(QueryExecutor e) : super(e);
+  $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final $CalendarsTable calendars = $CalendarsTable(this);
+  late final $EventsTable events = $EventsTable(this);
+  @override
+  Iterable<TableInfo<Table, Object?>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
+  @override
+  List<DatabaseSchemaEntity> get allSchemaEntities => [calendars, events];
+}
+
+typedef $$CalendarsTableCreateCompanionBuilder = CalendarsCompanion Function({
+  required String id,
+  required String title,
+  required int colorId,
+  Value<bool> isDefault,
+  Value<int> displayOrder,
+  Value<int> rowid,
+});
+typedef $$CalendarsTableUpdateCompanionBuilder = CalendarsCompanion Function({
+  Value<String> id,
+  Value<String> title,
+  Value<int> colorId,
+  Value<bool> isDefault,
+  Value<int> displayOrder,
+  Value<int> rowid,
+});
+
+final class $$CalendarsTableReferences
+    extends BaseReferences<_$AppDatabase, $CalendarsTable, CalendarRow> {
+  $$CalendarsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$EventsTable, List<EventRow>> _eventsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.events,
+    aliasName: 'calendars__id__events__calendar_id',
+  );
+
+  $$EventsTableProcessedTableManager get eventsRefs {
+    final manager = $$EventsTableTableManager(
+      $_db,
+      $_db.events,
+    ).filter((f) => f.calendarId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_eventsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$CalendarsTableFilterComposer
+    extends Composer<_$AppDatabase, $CalendarsTable> {
+  $$CalendarsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get colorId => $composableBuilder(
+    column: $table.colorId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDefault => $composableBuilder(
+    column: $table.isDefault,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get displayOrder => $composableBuilder(
+    column: $table.displayOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> eventsRefs(
+    Expression<bool> Function($$EventsTableFilterComposer f) f,
+  ) {
+    final $$EventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.calendarId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableFilterComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CalendarsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CalendarsTable> {
+  $$CalendarsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get colorId => $composableBuilder(
+    column: $table.colorId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDefault => $composableBuilder(
+    column: $table.isDefault,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get displayOrder => $composableBuilder(
+    column: $table.displayOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CalendarsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CalendarsTable> {
+  $$CalendarsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<int> get colorId =>
+      $composableBuilder(column: $table.colorId, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDefault =>
+      $composableBuilder(column: $table.isDefault, builder: (column) => column);
+
+  GeneratedColumn<int> get displayOrder => $composableBuilder(
+    column: $table.displayOrder,
+    builder: (column) => column,
+  );
+
+  Expression<T> eventsRefs<T extends Object>(
+    Expression<T> Function($$EventsTableAnnotationComposer a) f,
+  ) {
+    final $$EventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.calendarId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CalendarsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CalendarsTable,
+          CalendarRow,
+          $$CalendarsTableFilterComposer,
+          $$CalendarsTableOrderingComposer,
+          $$CalendarsTableAnnotationComposer,
+          $$CalendarsTableCreateCompanionBuilder,
+          $$CalendarsTableUpdateCompanionBuilder,
+          (CalendarRow, $$CalendarsTableReferences),
+          CalendarRow,
+          PrefetchHooks Function({bool eventsRefs})
+        > {
+  $$CalendarsTableTableManager(_$AppDatabase db, $CalendarsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CalendarsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CalendarsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CalendarsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<int> colorId = const Value.absent(),
+                Value<bool> isDefault = const Value.absent(),
+                Value<int> displayOrder = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CalendarsCompanion(
+                id: id,
+                title: title,
+                colorId: colorId,
+                isDefault: isDefault,
+                displayOrder: displayOrder,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String title,
+                required int colorId,
+                Value<bool> isDefault = const Value.absent(),
+                Value<int> displayOrder = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CalendarsCompanion.insert(
+                id: id,
+                title: title,
+                colorId: colorId,
+                isDefault: isDefault,
+                displayOrder: displayOrder,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CalendarsTable, CalendarRow>(table),
+                  $$CalendarsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({eventsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (eventsRefs) db.events],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (eventsRefs)
+                    await $_getPrefetchedDataByColumns<
+                      CalendarRow,
+                      $CalendarsTable,
+                      EventRow,
+                      $EventsTable
+                    >(
+                      currentTable: table,
+                      referencedTable: $$CalendarsTableReferences
+                          ._eventsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$CalendarsTableReferences(db, table, p0).eventsRefs,
+                      currentColumn: 'id',
+                      referencedColumn: 'calendar_id',
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CalendarsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CalendarsTable,
+      CalendarRow,
+      $$CalendarsTableFilterComposer,
+      $$CalendarsTableOrderingComposer,
+      $$CalendarsTableAnnotationComposer,
+      $$CalendarsTableCreateCompanionBuilder,
+      $$CalendarsTableUpdateCompanionBuilder,
+      (CalendarRow, $$CalendarsTableReferences),
+      CalendarRow,
+      PrefetchHooks Function({bool eventsRefs})
+    >;
+typedef $$EventsTableCreateCompanionBuilder = EventsCompanion Function({
+  required String id,
+  required String calendarId,
+  required String title,
+  Value<bool> allDay,
+  required DateTime start,
+  required DateTime end,
+  Value<int?> colorId,
+  Value<String?> location,
+  Value<String?> url,
+  Value<String?> notes,
+  Value<int> recFreq,
+  Value<int> recInterval,
+  Value<int> recEndKind,
+  Value<DateTime?> recUntil,
+  Value<int?> recCount,
+  Value<int?> alertMinutes,
+  Value<int> rowid,
+});
+typedef $$EventsTableUpdateCompanionBuilder = EventsCompanion Function({
+  Value<String> id,
+  Value<String> calendarId,
+  Value<String> title,
+  Value<bool> allDay,
+  Value<DateTime> start,
+  Value<DateTime> end,
+  Value<int?> colorId,
+  Value<String?> location,
+  Value<String?> url,
+  Value<String?> notes,
+  Value<int> recFreq,
+  Value<int> recInterval,
+  Value<int> recEndKind,
+  Value<DateTime?> recUntil,
+  Value<int?> recCount,
+  Value<int?> alertMinutes,
+  Value<int> rowid,
+});
+
+final class $$EventsTableReferences
+    extends BaseReferences<_$AppDatabase, $EventsTable, EventRow> {
+  $$EventsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $CalendarsTable _calendarIdTable(_$AppDatabase db) =>
+      db.calendars.createAlias('events__calendar_id__calendars__id');
+
+  $$CalendarsTableProcessedTableManager get calendarId {
+    final $_column = $_itemColumn<String>('calendar_id')!;
+
+    final manager = $$CalendarsTableTableManager(
+      $_db,
+      $_db.calendars,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_calendarIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$EventsTableFilterComposer
+    extends Composer<_$AppDatabase, $EventsTable> {
+  $$EventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get allDay => $composableBuilder(
+    column: $table.allDay,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get start => $composableBuilder(
+    column: $table.start,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get end => $composableBuilder(
+    column: $table.end,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get colorId => $composableBuilder(
+    column: $table.colorId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get location => $composableBuilder(
+    column: $table.location,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get url => $composableBuilder(
+    column: $table.url,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get recFreq => $composableBuilder(
+    column: $table.recFreq,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get recInterval => $composableBuilder(
+    column: $table.recInterval,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get recEndKind => $composableBuilder(
+    column: $table.recEndKind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get recUntil => $composableBuilder(
+    column: $table.recUntil,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get recCount => $composableBuilder(
+    column: $table.recCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get alertMinutes => $composableBuilder(
+    column: $table.alertMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CalendarsTableFilterComposer get calendarId {
+    final $$CalendarsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.calendarId,
+      referencedTable: $db.calendars,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CalendarsTableFilterComposer(
+            $db: $db,
+            $table: $db.calendars,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $EventsTable> {
+  $$EventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get allDay => $composableBuilder(
+    column: $table.allDay,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get start => $composableBuilder(
+    column: $table.start,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get end => $composableBuilder(
+    column: $table.end,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get colorId => $composableBuilder(
+    column: $table.colorId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get location => $composableBuilder(
+    column: $table.location,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get url => $composableBuilder(
+    column: $table.url,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get recFreq => $composableBuilder(
+    column: $table.recFreq,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get recInterval => $composableBuilder(
+    column: $table.recInterval,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get recEndKind => $composableBuilder(
+    column: $table.recEndKind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get recUntil => $composableBuilder(
+    column: $table.recUntil,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get recCount => $composableBuilder(
+    column: $table.recCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get alertMinutes => $composableBuilder(
+    column: $table.alertMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CalendarsTableOrderingComposer get calendarId {
+    final $$CalendarsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.calendarId,
+      referencedTable: $db.calendars,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CalendarsTableOrderingComposer(
+            $db: $db,
+            $table: $db.calendars,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $EventsTable> {
+  $$EventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<bool> get allDay =>
+      $composableBuilder(column: $table.allDay, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get start =>
+      $composableBuilder(column: $table.start, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get end =>
+      $composableBuilder(column: $table.end, builder: (column) => column);
+
+  GeneratedColumn<int> get colorId =>
+      $composableBuilder(column: $table.colorId, builder: (column) => column);
+
+  GeneratedColumn<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => column);
+
+  GeneratedColumn<String> get url =>
+      $composableBuilder(column: $table.url, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<int> get recFreq =>
+      $composableBuilder(column: $table.recFreq, builder: (column) => column);
+
+  GeneratedColumn<int> get recInterval => $composableBuilder(
+    column: $table.recInterval,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get recEndKind => $composableBuilder(
+    column: $table.recEndKind,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get recUntil =>
+      $composableBuilder(column: $table.recUntil, builder: (column) => column);
+
+  GeneratedColumn<int> get recCount =>
+      $composableBuilder(column: $table.recCount, builder: (column) => column);
+
+  GeneratedColumn<int> get alertMinutes => $composableBuilder(
+    column: $table.alertMinutes,
+    builder: (column) => column,
+  );
+
+  $$CalendarsTableAnnotationComposer get calendarId {
+    final $$CalendarsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.calendarId,
+      referencedTable: $db.calendars,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CalendarsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.calendars,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $EventsTable,
+          EventRow,
+          $$EventsTableFilterComposer,
+          $$EventsTableOrderingComposer,
+          $$EventsTableAnnotationComposer,
+          $$EventsTableCreateCompanionBuilder,
+          $$EventsTableUpdateCompanionBuilder,
+          (EventRow, $$EventsTableReferences),
+          EventRow,
+          PrefetchHooks Function({bool calendarId})
+        > {
+  $$EventsTableTableManager(_$AppDatabase db, $EventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$EventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$EventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> calendarId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<bool> allDay = const Value.absent(),
+                Value<DateTime> start = const Value.absent(),
+                Value<DateTime> end = const Value.absent(),
+                Value<int?> colorId = const Value.absent(),
+                Value<String?> location = const Value.absent(),
+                Value<String?> url = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<int> recFreq = const Value.absent(),
+                Value<int> recInterval = const Value.absent(),
+                Value<int> recEndKind = const Value.absent(),
+                Value<DateTime?> recUntil = const Value.absent(),
+                Value<int?> recCount = const Value.absent(),
+                Value<int?> alertMinutes = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => EventsCompanion(
+                id: id,
+                calendarId: calendarId,
+                title: title,
+                allDay: allDay,
+                start: start,
+                end: end,
+                colorId: colorId,
+                location: location,
+                url: url,
+                notes: notes,
+                recFreq: recFreq,
+                recInterval: recInterval,
+                recEndKind: recEndKind,
+                recUntil: recUntil,
+                recCount: recCount,
+                alertMinutes: alertMinutes,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String calendarId,
+                required String title,
+                Value<bool> allDay = const Value.absent(),
+                required DateTime start,
+                required DateTime end,
+                Value<int?> colorId = const Value.absent(),
+                Value<String?> location = const Value.absent(),
+                Value<String?> url = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<int> recFreq = const Value.absent(),
+                Value<int> recInterval = const Value.absent(),
+                Value<int> recEndKind = const Value.absent(),
+                Value<DateTime?> recUntil = const Value.absent(),
+                Value<int?> recCount = const Value.absent(),
+                Value<int?> alertMinutes = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => EventsCompanion.insert(
+                id: id,
+                calendarId: calendarId,
+                title: title,
+                allDay: allDay,
+                start: start,
+                end: end,
+                colorId: colorId,
+                location: location,
+                url: url,
+                notes: notes,
+                recFreq: recFreq,
+                recInterval: recInterval,
+                recEndKind: recEndKind,
+                recUntil: recUntil,
+                recCount: recCount,
+                alertMinutes: alertMinutes,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$EventsTable, EventRow>(table),
+                  $$EventsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({calendarId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (calendarId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.calendarId,
+                        referencedTable: $$EventsTableReferences
+                            ._calendarIdTable(db),
+                        referencedColumn: $$EventsTableReferences
+                            ._calendarIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$EventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $EventsTable,
+      EventRow,
+      $$EventsTableFilterComposer,
+      $$EventsTableOrderingComposer,
+      $$EventsTableAnnotationComposer,
+      $$EventsTableCreateCompanionBuilder,
+      $$EventsTableUpdateCompanionBuilder,
+      (EventRow, $$EventsTableReferences),
+      EventRow,
+      PrefetchHooks Function({bool calendarId})
+    >;
+
+class $AppDatabaseManager {
+  final _$AppDatabase _db;
+  $AppDatabaseManager(this._db);
+  $$CalendarsTableTableManager get calendars =>
+      $$CalendarsTableTableManager(_db, _db.calendars);
+  $$EventsTableTableManager get events =>
+      $$EventsTableTableManager(_db, _db.events);
+}

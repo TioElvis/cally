@@ -8,7 +8,7 @@ See [`docs/PLAN.md`](docs/PLAN.md) for architecture and the roadmap, and
 [`docs/DESIGN.md`](docs/DESIGN.md) for the design system.
 
 ## Status
-**M0 — month view** (local, mock data): an interruptible spring-scrolling month
+**M1 — local MVP:** events live in a local drift store (source of truth). Create/edit/delete via an iOS-style editor sheet (title, all-day, start/end, calendar, colour, repeat, alert, notes); recurrence (daily/weekly/monthly/yearly with count/until) expands into the grid and agenda. Still fully local — device calendars, iCloud and purchases come later.
 grid with today + selected-day highlighting, three-tone event chips, multi-day
 spans and a selected-day agenda. No external services yet (everything is local;
 device calendars, iCloud and purchases come in a later milestone).

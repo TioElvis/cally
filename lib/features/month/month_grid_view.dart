@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/tokens.dart';
 import '../../core/time/month_grid.dart';
+import '../../data/models.dart';
 import 'day_cell.dart';
-import 'domain/event.dart';
 import 'month_providers.dart';
 
-/// One month page: a fixed 6×7 grid of [DayCell]s.
+/// One month page: a fixed 6×7 grid of [DayCell]s, fed by the store.
 class MonthGridView extends ConsumerWidget {
   final DateTime monthAnchor;
   final void Function(DateTime day) onSelectDay;
@@ -21,7 +21,7 @@ class MonthGridView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final weekStart = ref.watch(weekStartProvider);
-    final events = ref.watch(eventsProvider);
+    final occurrences = ref.watch(monthOccurrencesProvider(monthAnchor));
     final selected = ref.watch(selectedDayProvider);
     final today = dateOnly(DateTime.now());
     final days = monthGridDays(monthAnchor, weekStart);
@@ -38,7 +38,7 @@ class MonthGridView extends ConsumerWidget {
                 return Expanded(
                   child: DayCell(
                     day: day,
-                    events: _eventsOn(events, day),
+                    events: _on(occurrences, day),
                     outsideMonth: !isSameMonth(day, monthAnchor),
                     isToday: isSameDay(day, today),
                     isSelected: isSameDay(day, selected),
@@ -53,12 +53,6 @@ class MonthGridView extends ConsumerWidget {
     );
   }
 
-  List<Event> _eventsOn(List<Event> all, DateTime day) {
-    final out = all.where((e) => e.occursOn(day)).toList()
-      ..sort((a, b) {
-        if (a.allDay != b.allDay) return a.allDay ? -1 : 1;
-        return a.start.compareTo(b.start);
-      });
-    return out;
-  }
+  List<DayOccurrence> _on(List<DayOccurrence> all, DateTime day) =>
+      sortOccurrences(all.where((e) => e.occursOn(day)).toList());
 }

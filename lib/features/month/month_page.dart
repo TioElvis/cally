@@ -6,7 +6,8 @@ import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/tokens.dart';
 import '../../core/time/month_grid.dart';
-import 'domain/event.dart';
+import '../../data/models.dart';
+import '../event_editor/event_editor_sheet.dart';
 import 'month_grid_view.dart';
 import 'month_providers.dart';
 
@@ -73,6 +74,7 @@ class _MonthPageState extends ConsumerState<MonthPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(seedProvider); // create defaults + samples on first run
     final focused = ref.watch(focusedMonthProvider);
     final selected = ref.watch(selectedDayProvider);
     final isCurrentMonth = isSameMonth(focused, DateTime.now());
@@ -214,8 +216,16 @@ class _DayAgenda extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final events = ref.watch(eventsForDayProvider(day));
+    final events = ref.watch(dayOccurrencesProvider(day));
     final heading = DateFormat('EEE d MMM y').format(day);
+
+    Future<void> openEditor(DayOccurrence occ) async {
+      final rows = ref.read(eventRowsProvider).value ?? const [];
+      final matches = rows.where((r) => r.id == occ.masterId);
+      if (matches.isNotEmpty) {
+        await showEventEditor(context, EventDraft.fromRow(matches.first));
+      }
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -245,10 +255,11 @@ class _DayAgenda extends ConsumerWidget {
           else
             SliverList.builder(
               itemCount: events.length,
-              itemBuilder: (context, i) => _AgendaRow(event: events[i]),
+              itemBuilder: (context, i) =>
+                  _AgendaRow(event: events[i], onTap: () => openEditor(events[i])),
             ),
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
-          SliverToBoxAdapter(child: _NewEventButton()),
+          SliverToBoxAdapter(child: _NewEventButton(day: day)),
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
@@ -257,52 +268,60 @@ class _DayAgenda extends ConsumerWidget {
 }
 
 class _AgendaRow extends StatelessWidget {
-  final Event event;
-  const _AgendaRow({required this.event});
+  final DayOccurrence event;
+  final VoidCallback onTap;
+  const _AgendaRow({required this.event, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final tones = EventColors.of(context, event.colorId);
+    final bar = EventColors.base(event.colorId);
     final time = event.allDay
         ? 'All-day'
         : '${DateFormat.Hm().format(event.start)} – ${DateFormat.Hm().format(event.end)}';
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Tokens.gutter, vertical: 7),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            width: 4,
-            height: 36,
-            decoration: BoxDecoration(
-              color: tones.bar,
-              borderRadius: BorderRadius.circular(2),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: Tokens.gutter, vertical: 7),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 4,
+              height: 36,
+              decoration: BoxDecoration(
+                color: bar,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(event.title,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: CupertinoColors.label.resolveFrom(context))),
-                const SizedBox(height: 2),
-                Text(time, style: AppText.secondary(context)),
-              ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(event.title,
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: CupertinoColors.label.resolveFrom(context))),
+                  const SizedBox(height: 2),
+                  Text(time, style: AppText.secondary(context)),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _NewEventButton extends StatelessWidget {
+class _NewEventButton extends ConsumerWidget {
+  final DateTime day;
+  const _NewEventButton({required this.day});
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Tokens.gutter),
       child: CupertinoButton(
@@ -311,20 +330,9 @@ class _NewEventButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(Tokens.rButton),
         onPressed: () {
           HapticFeedback.lightImpact();
-          showCupertinoDialog<void>(
-            context: context,
-            builder: (context) => CupertinoAlertDialog(
-              title: const Text('New event'),
-              content: const Text('The event editor arrives in the next milestone (M1).'),
-              actions: [
-                CupertinoDialogAction(
-                  isDefaultAction: true,
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
+          final cal = ref.read(defaultCalendarProvider);
+          if (cal == null) return;
+          showEventEditor(context, EventDraft.newAt(day, cal.id));
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

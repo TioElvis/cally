@@ -1,0 +1,88 @@
+import 'package:drift/drift.dart';
+import 'package:uuid/uuid.dart';
+
+import '../core/time/recurrence.dart';
+import 'db/database.dart';
+import 'models.dart';
+
+/// The app's event/calendar store. Backed by drift locally (M1); in M8 a device
+/// adapter can replace it behind the same surface.
+class EventRepository {
+  final AppDatabase db;
+  final _uuid = const Uuid();
+
+  EventRepository(this.db);
+
+  Stream<List<EventRow>> watchEvents() => db.watchAllEvents();
+  Stream<List<Calendar>> watchCalendars() =>
+      db.watchCalendars().map((rows) => rows.map(Calendar.from).toList());
+
+  Future<void> save(EventDraft d) async {
+    final id = d.id ?? _uuid.v4();
+    await db.upsertEvent(EventsCompanion.insert(
+      id: id,
+      calendarId: d.calendarId,
+      title: d.title.trim().isEmpty ? 'Untitled' : d.title.trim(),
+      start: d.start,
+      end: d.allDay ? _endOfAllDay(d.start, d.end) : d.end,
+      allDay: Value(d.allDay),
+      colorId: Value(d.colorId),
+      location: Value(_nz(d.location)),
+      url: Value(_nz(d.url)),
+      notes: Value(_nz(d.notes)),
+      recFreq: Value(d.recurrence.freq.index),
+      recInterval: Value(d.recurrence.interval),
+      recEndKind: Value(d.recurrence.endKind.index),
+      recUntil: Value(d.recurrence.until),
+      recCount: Value(d.recurrence.count),
+      alertMinutes: Value(d.alertMinutes),
+    ));
+  }
+
+  Future<void> delete(String id) => db.deleteEvent(id);
+
+  /// Create default calendars and a few sample events the first time the app
+  /// runs, so the month view isn't empty. Idempotent.
+  Future<void> ensureSeeded() async {
+    if (await db.calendarCount() > 0) return;
+    await db.upsertCalendar(CalendarsCompanion.insert(
+        id: 'personal', title: 'Personal', colorId: 0,
+        isDefault: const Value(true)));
+    await db.upsertCalendar(CalendarsCompanion.insert(
+        id: 'work', title: 'Work', colorId: 3,
+        displayOrder: const Value(1)));
+
+    final today = DateTime.now();
+    DateTime at(int dayOffset, int h, [int m = 0]) =>
+        DateTime(today.year, today.month, today.day + dayOffset, h, m);
+
+    Future<void> seed(String cal, String title, DateTime s, DateTime e,
+        {bool allDay = false, int? color, Recurrence rec = Recurrence.none}) async {
+      final d = EventDraft(
+        calendarId: cal, title: title, start: s, end: e,
+        allDay: allDay, colorId: color, recurrence: rec,
+      );
+      await save(d);
+    }
+
+    await seed('work', 'Standup', at(0, 9, 30), at(0, 9, 45), color: 0,
+        rec: const Recurrence(freq: Freq.daily));
+    await seed('personal', 'Lunch with Sam', at(0, 13), at(0, 14), color: 5);
+    await seed('personal', 'Gym', at(0, 18, 30), at(0, 19, 30), color: 2,
+        rec: const Recurrence(freq: Freq.weekly));
+    await seed('personal', 'Dentist', at(1, 11), at(1, 11, 45), color: 4);
+    await seed('work', 'Design review', at(2, 15), at(2, 16), color: 6);
+    await seed('personal', 'Trip to Rome',
+        DateTime(today.year, today.month, today.day + 3),
+        DateTime(today.year, today.month, today.day + 6),
+        allDay: true, color: 1);
+  }
+
+  DateTime _endOfAllDay(DateTime start, DateTime end) {
+    // all-day events end at the next midnight after their last day
+    final last = end.isAfter(start) ? end : start;
+    return DateTime(last.year, last.month, last.day).add(const Duration(days: 1));
+  }
+
+  String? _nz(String? s) => (s == null || s.trim().isEmpty) ? null : s.trim();
+}

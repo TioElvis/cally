@@ -3,13 +3,13 @@ import 'package:flutter/cupertino.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/tokens.dart';
 import '../../core/widgets/event_chip.dart';
-import 'domain/event.dart';
+import '../../data/models.dart';
 
 /// One day in the month grid: date number + up to a few event chips, with the
 /// normal / Saturday / Sunday / outside-month / today / selected states.
 class DayCell extends StatelessWidget {
   final DateTime day;
-  final List<Event> events;
+  final List<DayOccurrence> events;
   final bool outsideMonth;
   final bool isToday;
   final bool isSelected;
@@ -36,12 +36,11 @@ class DayCell extends StatelessWidget {
             ? CupertinoColors.systemGrey6.resolveFrom(context)
             : null;
 
-    // Decide which chips fit: all if few, else (max-1) chips + "+N".
     final visible = <Widget>[];
     if (events.length <= _maxRows) {
-      visible.addAll(events.map((e) => _chip(e)));
+      visible.addAll(events.map(_chip));
     } else {
-      visible.addAll(events.take(_maxRows - 1).map((e) => _chip(e)));
+      visible.addAll(events.take(_maxRows - 1).map(_chip));
       visible.add(MoreChip(events.length - (_maxRows - 1)));
     }
 
@@ -65,9 +64,7 @@ class DayCell extends StatelessWidget {
               textAlign: TextAlign.center,
               style: AppText.dateNumber(
                 context,
-                color: isSelected
-                    ? Tokens.onBrand.resolveFrom(context)
-                    : numberColor,
+                color: isSelected ? Tokens.onBrand.resolveFrom(context) : numberColor,
                 emphasized: isToday || isSelected,
               ),
             ),
@@ -79,12 +76,14 @@ class DayCell extends StatelessWidget {
     );
   }
 
-  Widget _chip(Event e) => EventChip(
+  Widget _chip(DayOccurrence e) => EventChip(
         title: e.title,
         colorId: e.colorId,
         faded: outsideMonth,
-        continuesLeft: e.occursOn(day.subtract(const Duration(days: 1))) && e.isMultiDay,
-        continuesRight: e.occursOn(day.add(const Duration(days: 1))) && e.isMultiDay,
+        continuesLeft:
+            e.isMultiDay && e.occursOn(day.subtract(const Duration(days: 1))),
+        continuesRight:
+            e.isMultiDay && e.occursOn(day.add(const Duration(days: 1))),
       );
 
   Color _numberColor(BuildContext c) {
