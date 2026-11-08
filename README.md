@@ -8,7 +8,7 @@ See [`docs/PLAN.md`](docs/PLAN.md) for architecture and the roadmap, and
 [`docs/DESIGN.md`](docs/DESIGN.md) for the design system.
 
 ## Status
-**M3 — notifications** (local): per-event and default alerts, morning/evening digests and an app-icon badge, planned from events + settings behind a notification port (real `flutter_local_notifications` on mobile, a fake on Linux/dev). Plus a Restore-events cache (undo deletes). Built on M0–M2.
+**M4 — home widgets** (native): iOS WidgetKit (Month + Upcoming) and an Android AppWidget, fed by a pure payload builder + a home_widget bridge, with widget-tap deep links. The Dart pipeline is tested on Linux; the native widgets build on a Mac/emulator (see docs/BUILD-IOS.md, docs/WIDGETS.md). Built on M0–M3.
 grid with today + selected-day highlighting, three-tone event chips, multi-day
 spans and a selected-day agenda. No external services yet (everything is local;
 device calendars, iCloud and purchases come in a later milestone).

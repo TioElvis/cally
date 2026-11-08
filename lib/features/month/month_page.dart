@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +12,8 @@ import '../../core/time/month_grid.dart';
 import '../../data/models.dart';
 import '../event_editor/event_editor_sheet.dart';
 import '../notifications/notification_providers.dart';
+import '../widgets/deep_link.dart';
+import '../widgets/widget_providers.dart';
 import '../search/search_sheet.dart';
 import '../settings/settings_page.dart';
 import 'month_grid_view.dart';
@@ -28,16 +32,42 @@ class _MonthPageState extends ConsumerState<MonthPage> {
   static const _initialPage = 1200; // ~100 years of headroom either way
   late final DateTime _baseMonth;
   late final PageController _controller;
+  StreamSubscription<Uri?>? _tapSub;
 
   @override
   void initState() {
     super.initState();
     _baseMonth = firstOfMonth(DateTime.now());
     _controller = PageController(initialPage: _initialPage);
+    _wireWidgetLinks();
+  }
+
+  Future<void> _wireWidgetLinks() async {
+    final bridge = ref.read(homeWidgetBridgeProvider);
+    final initial = await bridge.initialLaunch();
+    if (initial != null && mounted) _handleAction(parseDeepLink(initial));
+    _tapSub = bridge.taps().listen((uri) {
+      if (mounted) _handleAction(parseDeepLink(uri));
+    });
+  }
+
+  void _handleAction(WidgetAction action) {
+    switch (action) {
+      case OpenToday():
+        _goToToday();
+      case OpenDay(:final day):
+        _selectDay(day);
+      case NewEvent(:final day):
+        final DateTime target = day ?? ref.read(selectedDayProvider);
+        _selectDay(target);
+        final cal = ref.read(defaultCalendarProvider);
+        if (cal != null) showEventEditor(context, EventDraft.newAt(target, cal.id));
+    }
   }
 
   @override
   void dispose() {
+    _tapSub?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -80,6 +110,7 @@ class _MonthPageState extends ConsumerState<MonthPage> {
   Widget build(BuildContext context) {
     ref.watch(seedProvider); // create defaults + samples on first run
     ref.watch(notificationSchedulerProvider); // keep alarms + badge in sync
+    ref.watch(widgetRefresherProvider); // keep home widgets in sync
     final focused = ref.watch(focusedMonthProvider);
     final selected = ref.watch(selectedDayProvider);
     final isCurrentMonth = isSameMonth(focused, DateTime.now());
