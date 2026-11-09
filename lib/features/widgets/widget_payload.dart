@@ -10,9 +10,14 @@ import '../../data/models.dart';
 ///
 /// Keys:
 ///  - `title`    : current month name, uppercase (e.g. "NOVEMBER")
-///  - `grid`     : JSON [{d,out,today,dots:[colorId..],more}] × 42 (6×7)
+///  - `grid`     : JSON [{d,out,today,labels:[{t,c,a}..],more}] × 42 (6×7)
 ///  - `upcoming` : JSON [{t,s(msEpoch),c,a}] next events (<= [upcomingCount])
 ///  - `todayCount`: number of events today, as a string
+///
+/// Each cell carries up to [labelsPerDay] event labels (title + colour), so the
+/// native widgets can render a minical-style grid with small event chips rather
+/// than bare dots. Titles are capped so the payload stays small; the widgets
+/// ellipsise what does not fit.
 Map<String, String> buildWidgetPayload({
   required List<EventRow> events,
   required Map<String, int> calColor,
@@ -20,6 +25,8 @@ Map<String, String> buildWidgetPayload({
   required DateTime now,
   int upcomingCount = 6,
   int horizonDays = 45,
+  int labelsPerDay = 3,
+  int maxTitleChars = 24,
 }) {
   final month = firstOfMonth(now);
   final days = monthGridDays(month, weekStart);
@@ -32,13 +39,17 @@ Map<String, String> buildWidgetPayload({
   final grid = <Map<String, dynamic>>[];
   for (final day in days) {
     final onDay = sortOccurrences(occ.where((o) => o.occursOn(day)).toList());
-    final dots = onDay.take(3).map((o) => o.colorId).toList();
+    final labels = onDay.take(labelsPerDay).map((o) => {
+          't': _cap(o.title, maxTitleChars),
+          'c': o.colorId,
+          'a': o.allDay,
+        }).toList();
     grid.add({
       'd': day.day,
       'out': !isSameMonth(day, month),
       'today': isSameDay(day, today),
-      'dots': dots,
-      'more': onDay.length > 3 ? onDay.length - 3 : 0,
+      'labels': labels,
+      'more': onDay.length > labelsPerDay ? onDay.length - labelsPerDay : 0,
     });
   }
 
@@ -62,6 +73,8 @@ Map<String, String> buildWidgetPayload({
     'grid': jsonEncode(grid),
     'upcoming': jsonEncode(upcoming),
     'todayCount': '$todayCount',
+    // 1=Mon..7=Sun; the native widgets build their weekday header from this.
+    'weekStart': '$weekStart',
   };
 }
 
@@ -71,3 +84,11 @@ const _months = [
 ];
 
 String _monthName(DateTime m) => _months[m.month - 1];
+
+/// Trims an event title for the widget, keeping whole characters and adding an
+/// ellipsis when cut (the native widgets ellipsise again if the cell is narrow).
+String _cap(String s, int max) {
+  final t = s.trim();
+  if (t.length <= max) return t;
+  return '${t.substring(0, max - 1).trimRight()}…';
+}

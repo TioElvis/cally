@@ -14,7 +14,8 @@ private let appGroupId = "group.com.cally.cally"
 
 // MARK: - Shared data
 
-struct Cell: Decodable { let d: Int; let out: Bool; let today: Bool; let dots: [Int]; let more: Int }
+struct Lbl: Decodable { let t: String; let c: Int; let a: Bool }
+struct Cell: Decodable { let d: Int; let out: Bool; let today: Bool; let labels: [Lbl]; let more: Int }
 struct UpItem: Decodable { let t: String; let s: Int; let c: Int; let a: Bool }
 
 // Cally's event colour palette (keep in sync with lib/core/theme/tokens.dart).
@@ -34,13 +35,15 @@ struct CallyData {
     let title: String
     let grid: [Cell]
     let upcoming: [UpItem]
+    let weekStart: Int // 1=Mon..7=Sun
 
     static func load() -> CallyData {
         let d = UserDefaults(suiteName: appGroupId)
         let title = d?.string(forKey: "title") ?? "CALLY"
         let grid = decode([Cell].self, d?.string(forKey: "grid")) ?? []
         let up = decode([UpItem].self, d?.string(forKey: "upcoming")) ?? []
-        return CallyData(title: title, grid: grid, upcoming: up)
+        let ws = Int(d?.string(forKey: "weekStart") ?? "1") ?? 1
+        return CallyData(title: title, grid: grid, upcoming: up, weekStart: ws)
     }
 
     private static func decode<T: Decodable>(_ type: T.Type, _ s: String?) -> T? {
@@ -68,26 +71,76 @@ struct Provider: TimelineProvider {
 
 // MARK: - Views
 
+/// A small event label, minical-style: a soft tinted pill with the event
+/// title in its colour, ellipsised to one line so long names still fit.
+struct Chip: View {
+    let label: Lbl
+    var body: some View {
+        Text(label.t)
+            .font(.system(size: 8, weight: .medium))
+            .lineLimit(1)
+            .truncationMode(.tail)
+            .foregroundColor(colorFor(label.c))
+            .padding(.horizontal, 3)
+            .padding(.vertical, 0.5)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(RoundedRectangle(cornerRadius: 3).fill(colorFor(label.c).opacity(0.22)))
+    }
+}
+
+/// One day cell: the date, then up to three event chips and a "+N" overflow.
+struct CellView: View {
+    let cell: Cell
+    var body: some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text("\(cell.d)")
+                .font(.system(size: 10, weight: cell.today ? .bold : .regular))
+                .foregroundColor(cell.out ? .secondary.opacity(0.4) : (cell.today ? .white : .primary))
+                .frame(width: 15, height: 15)
+                .background(cell.today ? Color.accentColor : .clear)
+                .clipShape(Circle())
+            ForEach(Array(cell.labels.prefix(3).enumerated()), id: \.offset) { _, l in
+                Chip(label: l)
+            }
+            if cell.more > 0 {
+                Text("+\(cell.more)")
+                    .font(.system(size: 7, weight: .semibold))
+                    .foregroundColor(.secondary)
+                    .padding(.leading, 2)
+            }
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, minHeight: 46, alignment: .topLeading)
+        .opacity(cell.out ? 0.5 : 1)
+    }
+}
+
 struct MonthGridView: View {
     let data: CallyData
     private let cols = Array(repeating: GridItem(.flexible(), spacing: 2), count: 7)
 
+    // Localised one-letter weekday headers, ordered by the app's week start.
+    private var weekdaySymbols: [String] {
+        let base = DateFormatter().veryShortStandaloneWeekdaySymbols
+            ?? ["S", "M", "T", "W", "T", "F", "S"]
+        let sundayFirst = data.weekStart % 7 // Mon(1)->1 … Sat(6)->6, Sun(7)->0
+        return (0..<7).map { base[(sundayFirst + $0) % base.count] }
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 4) {
             Text(data.title).font(.caption).bold().foregroundColor(.primary)
+            HStack(spacing: 2) {
+                ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { _, s in
+                    Text(s)
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity)
+                }
+            }
             LazyVGrid(columns: cols, spacing: 2) {
                 ForEach(Array(data.grid.enumerated()), id: \.offset) { _, c in
-                    VStack(spacing: 1) {
-                        Text("\(c.d)")
-                            .font(.system(size: 9))
-                            .foregroundColor(c.out ? .secondary.opacity(0.4) : (c.today ? .white : .primary))
-                            .frame(width: 16, height: 16)
-                            .background(c.today ? Color.accentColor : .clear)
-                            .clipShape(Circle())
-                        HStack(spacing: 1) {
-                            ForEach(c.dots.prefix(3), id: \.self) { Circle().fill(colorFor($0)).frame(width: 4, height: 4) }
-                        }
-                    }
+                    CellView(cell: c)
                 }
             }
         }
