@@ -27,6 +27,7 @@ Map<String, String> buildWidgetPayload({
   int horizonDays = 45,
   int labelsPerDay = 3,
   int maxTitleChars = 24,
+  int themeMode = 0, // ThemePref.index: 0 system, 1 light, 2 dark
 }) {
   final month = firstOfMonth(now);
   final days = monthGridDays(month, weekStart);
@@ -75,6 +76,8 @@ Map<String, String> buildWidgetPayload({
     'todayCount': '$todayCount',
     // 1=Mon..7=Sun; the native widgets build their weekday header from this.
     'weekStart': '$weekStart',
+    // App theme: the widget matches it (0 system, 1 light, 2 dark).
+    'themeMode': '$themeMode',
   };
 }
 

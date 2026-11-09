@@ -27,6 +27,7 @@ final widgetRefresherProvider = Provider<void>((ref) {
       calColor: calColor,
       weekStart: settings.weekStart,
       now: DateTime.now(),
+      themeMode: settings.themeMode.index,
     ));
   }
 

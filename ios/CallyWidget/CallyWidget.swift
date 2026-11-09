@@ -36,6 +36,7 @@ struct CallyData {
     let grid: [Cell]
     let upcoming: [UpItem]
     let weekStart: Int // 1=Mon..7=Sun
+    let themeMode: Int // 0 system, 1 light, 2 dark
 
     static func load() -> CallyData {
         let d = UserDefaults(suiteName: appGroupId)
@@ -43,7 +44,8 @@ struct CallyData {
         let grid = decode([Cell].self, d?.string(forKey: "grid")) ?? []
         let up = decode([UpItem].self, d?.string(forKey: "upcoming")) ?? []
         let ws = Int(d?.string(forKey: "weekStart") ?? "1") ?? 1
-        return CallyData(title: title, grid: grid, upcoming: up, weekStart: ws)
+        let tm = Int(d?.string(forKey: "themeMode") ?? "0") ?? 0
+        return CallyData(title: title, grid: grid, upcoming: up, weekStart: ws, themeMode: tm)
     }
 
     private static func decode<T: Decodable>(_ type: T.Type, _ s: String?) -> T? {
@@ -66,6 +68,32 @@ struct Provider: TimelineProvider {
         let next = Calendar.current.nextDate(after: Date(), matching: DateComponents(hour: 0),
                                              matchingPolicy: .nextTime) ?? Date().addingTimeInterval(3600)
         completion(Timeline(entries: [Entry(date: Date(), data: CallyData.load())], policy: .after(next)))
+    }
+}
+
+// MARK: - Theme
+
+/// Forces the widget to match the app's theme (system / light / dark) rather
+/// than only the device appearance, and paints a matching background.
+private struct Themed<Content: View>: View {
+    let mode: Int
+    @ViewBuilder let content: Content
+    var body: some View {
+        content
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemBackground))
+            .modifier(SchemeOverride(mode: mode))
+    }
+}
+
+private struct SchemeOverride: ViewModifier {
+    let mode: Int
+    func body(content: Content) -> some View {
+        switch mode {
+        case 1: return AnyView(content.environment(\.colorScheme, .light))
+        case 2: return AnyView(content.environment(\.colorScheme, .dark))
+        default: return AnyView(content)
+        }
     }
 }
 
@@ -172,21 +200,29 @@ struct UpcomingView: View {
 
 // MARK: - Widgets
 
+// The biggest month grid the device offers: extra-large on iPad, large on iPhone.
+private var monthFamilies: [WidgetFamily] {
+    if #available(iOSApplicationExtension 15.0, *) {
+        return [.systemLarge, .systemExtraLarge]
+    }
+    return [.systemLarge]
+}
+
 struct CallyMonthWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "CallyMonthWidget", provider: Provider()) { e in
-            MonthGridView(data: e.data)
+            Themed(mode: e.data.themeMode) { MonthGridView(data: e.data) }
         }
         .configurationDisplayName("Month")
         .description("This month at a glance.")
-        .supportedFamilies([.systemLarge])
+        .supportedFamilies(monthFamilies)
     }
 }
 
 struct CallyUpcomingWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "CallyUpcomingWidget", provider: Provider()) { e in
-            UpcomingView(data: e.data)
+            Themed(mode: e.data.themeMode) { UpcomingView(data: e.data) }
         }
         .configurationDisplayName("Upcoming")
         .description("Your next events.")

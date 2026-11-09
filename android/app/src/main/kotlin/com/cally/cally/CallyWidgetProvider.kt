@@ -3,6 +3,7 @@ package com.cally.cally
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
@@ -45,15 +46,29 @@ class CallyWidgetProvider : HomeWidgetProvider() {
 
         val title = widgetData.getString("title", "CALLY")
         val weekStart = (widgetData.getString("weekStart", "1") ?: "1").toIntOrNull() ?: 1
+        val themeMode = (widgetData.getString("themeMode", "0") ?: "0").toIntOrNull() ?: 0
         val grid = try {
             JSONArray(widgetData.getString("grid", "[]"))
         } catch (e: Exception) {
             JSONArray()
         }
 
+        // Match the app's theme (0 system follows the device, 1 light, 2 dark).
+        val dark = when (themeMode) {
+            1 -> false
+            2 -> true
+            else -> (res.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+                Configuration.UI_MODE_NIGHT_YES
+        }
+        val primary = if (dark) 0xFFFFFFFF.toInt() else 0xFF1A1A1A.toInt()
+        val faded = if (dark) 0x55FFFFFF else 0x55000000
+        val bgRes = if (dark) R.drawable.cally_widget_bg_dark else R.drawable.cally_widget_bg
+
         appWidgetIds.forEach { widgetId ->
             val views = RemoteViews(pkg, R.layout.cally_widget)
+            views.setInt(R.id.widget_root, "setBackgroundResource", bgRes)
             views.setTextViewText(R.id.widget_title, title)
+            views.setTextColor(R.id.widget_title, primary)
 
             // Weekday header, localised, ordered from the chosen week start.
             val letters = weekdayLetters(weekStart)
@@ -81,9 +96,12 @@ class CallyWidgetProvider : HomeWidgetProvider() {
                     }
                     out -> {
                         views.setInt(dayId, "setBackgroundResource", 0)
-                        views.setTextColor(dayId, 0x66888888)
+                        views.setTextColor(dayId, faded)
                     }
-                    else -> views.setInt(dayId, "setBackgroundResource", 0)
+                    else -> {
+                        views.setInt(dayId, "setBackgroundResource", 0)
+                        views.setTextColor(dayId, primary)
+                    }
                 }
 
                 val labels = cell.optJSONArray("labels") ?: JSONArray()
