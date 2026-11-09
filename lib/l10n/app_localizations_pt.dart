@@ -146,6 +146,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get accentColor => 'Cor de destaque';
 
   @override
+  String get language => 'Idioma';
+
+  @override
+  String get languageSystem => 'Padrão do sistema';
+
+  @override
   String get notifications => 'Notificações';
 
   @override

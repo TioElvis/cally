@@ -59,6 +59,12 @@ class SettingsPage extends ConsumerWidget {
                   ),
                 ),
                 CupertinoListTile(
+                  title: Text(t.language),
+                  additionalInfo: Text(_languageLabel(t, settings.languageCode)),
+                  trailing: const CupertinoListTileChevron(),
+                  onTap: () => _pickLanguage(context, repo, settings.languageCode),
+                ),
+                CupertinoListTile(
                   title: Text(t.firstDayOfWeek),
                   additionalInfo: Text(_weekdayName(settings.weekStart)),
                   trailing: const CupertinoListTileChevron(),
@@ -270,6 +276,50 @@ class SettingsPage extends ConsumerWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  /// Supported languages, each shown in its own name. null = follow device.
+  static const _languages = <String, String>{
+    'en': 'English',
+    'it': 'Italiano',
+    'es': 'Español',
+    'fr': 'Français',
+    'de': 'Deutsch',
+    'pt': 'Português',
+  };
+
+  static String _languageLabel(AppLocalizations t, String? code) =>
+      code == null ? t.languageSystem : (_languages[code] ?? code);
+
+  Future<void> _pickLanguage(BuildContext context, repo, String? current) async {
+    final t = AppLocalizations.of(context);
+    await showCupertinoModalPopup<void>(
+      context: context,
+      builder: (c) => CupertinoActionSheet(
+        title: Text(t.language),
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () {
+              repo.setLanguage(null);
+              Navigator.pop(c);
+            },
+            child: Text(t.languageSystem,
+                style: current == null ? const TextStyle(fontWeight: FontWeight.w600) : null),
+          ),
+          for (final e in _languages.entries)
+            CupertinoActionSheetAction(
+              onPressed: () {
+                repo.setLanguage(e.key);
+                Navigator.pop(c);
+              },
+              child: Text(e.value,
+                  style: current == e.key ? const TextStyle(fontWeight: FontWeight.w600) : null),
+            ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+            onPressed: () => Navigator.pop(c), child: Text(t.cancel)),
       ),
     );
   }

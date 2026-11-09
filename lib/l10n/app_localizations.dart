@@ -346,6 +346,18 @@ abstract class AppLocalizations {
   /// **'Accent color'**
   String get accentColor;
 
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @languageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System default'**
+  String get languageSystem;
+
   /// No description provided for @notifications.
   ///
   /// In en, this message translates to:

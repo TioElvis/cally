@@ -146,6 +146,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accentColor => 'Accent color';
 
   @override
+  String get language => 'Language';
+
+  @override
+  String get languageSystem => 'System default';
+
+  @override
   String get notifications => 'Notifications';
 
   @override

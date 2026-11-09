@@ -22,7 +22,7 @@ final notificationSchedulerProvider = Provider<void>((ref) {
     final now = DateTime.now();
 
     await service.replaceAll(planNotifications(
-        events: events, settings: settings, now: now, t: _deviceL10n()));
+        events: events, settings: settings, now: now, t: _l10n(settings.languageCode)));
 
     final badge = switch (settings.badgeType) {
       BadgeType.count => countOnDay(events, dateOnly(now)),
@@ -37,11 +37,13 @@ final notificationSchedulerProvider = Provider<void>((ref) {
   reschedule();
 });
 
-/// AppLocalizations for the device language, for background notification text.
-AppLocalizations _deviceL10n() {
-  final device = WidgetsBinding.instance.platformDispatcher.locale;
+/// AppLocalizations for background notification text. Uses the manual
+/// [override] language when set, otherwise the device language (both fall
+/// back to English).
+AppLocalizations _l10n(String? override) {
   final supported =
       AppLocalizations.supportedLocales.map((l) => l.languageCode).toSet();
-  final code = supported.contains(device.languageCode) ? device.languageCode : 'en';
+  final wanted = override ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+  final code = supported.contains(wanted) ? wanted : 'en';
   return lookupAppLocalizations(Locale(code));
 }

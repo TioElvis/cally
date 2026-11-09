@@ -51,6 +51,7 @@ class AppSettings {
   final bool isPro;
   final bool showWeekNumbers;
   final int accentId;
+  final String? languageCode; // manual override; null = follow the device
 
   const AppSettings({
     this.themeMode = ThemePref.system,
@@ -66,6 +67,7 @@ class AppSettings {
     this.isPro = false,
     this.showWeekNumbers = false,
     this.accentId = 0,
+    this.languageCode,
   });
 
   /// Week numbers are a free feature now (Cally is fully free).
@@ -87,6 +89,7 @@ class AppSettings {
           isPro: r.isPro,
           showWeekNumbers: r.showWeekNumbers,
           accentId: r.accentId,
+          languageCode: r.languageCode,
         );
 }
 

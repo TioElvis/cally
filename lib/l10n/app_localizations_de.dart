@@ -146,6 +146,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get accentColor => 'Akzentfarbe';
 
   @override
+  String get language => 'Sprache';
+
+  @override
+  String get languageSystem => 'Systemstandard';
+
+  @override
   String get notifications => 'Mitteilungen';
 
   @override

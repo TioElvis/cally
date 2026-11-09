@@ -54,6 +54,8 @@
   "use24h": "24-hour time",
   "weekNumbers": "Week numbers",
   "accentColor": "Accent color",
+  "language": "Language",
+  "languageSystem": "System default",
   "notifications": "Notifications",
   "enableNotifications": "Enable notifications",
   "defaultAlert": "Default alert",

@@ -48,4 +48,8 @@ class SettingsRepository {
 
   Future<void> setAccent(int id) => db.upsertSettings(
       AppSettingsTableCompanion(id: const Value('app'), accentId: Value(id)));
+
+  /// Manual language override; pass null to follow the device language.
+  Future<void> setLanguage(String? code) => db.upsertSettings(
+      AppSettingsTableCompanion(id: const Value('app'), languageCode: Value(code)));
 }

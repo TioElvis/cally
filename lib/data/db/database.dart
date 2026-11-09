@@ -41,6 +41,9 @@ class AppSettingsTable extends Table {
   // Accent colour index into kAccents.
   IntColumn get accentId => integer().withDefault(const Constant(0))();
 
+  // Manual language override (e.g. 'en', 'it'); null = follow the device.
+  TextColumn get languageCode => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -104,7 +107,7 @@ class AppDatabase extends _$AppDatabase {
       : super(executor ?? driftDatabase(name: 'cally'));
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -130,6 +133,9 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 5) {
             await m.addColumn(appSettingsTable, appSettingsTable.accentId);
+          }
+          if (from < 6) {
+            await m.addColumn(appSettingsTable, appSettingsTable.languageCode);
           }
         },
       );

@@ -40,6 +40,8 @@
   "use24h": "24-Stunden-Format",
   "weekNumbers": "Kalenderwochen",
   "accentColor": "Akzentfarbe",
+  "language": "Sprache",
+  "languageSystem": "Systemstandard",
   "notifications": "Mitteilungen",
   "enableNotifications": "Mitteilungen aktivieren",
   "defaultAlert": "Standardhinweis",

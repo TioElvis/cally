@@ -1499,6 +1499,17 @@ class $AppSettingsTableTable extends AppSettingsTable
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _languageCodeMeta = const VerificationMeta(
+    'languageCode',
+  );
+  @override
+  late final GeneratedColumn<String> languageCode = GeneratedColumn<String>(
+    'language_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1515,6 +1526,7 @@ class $AppSettingsTableTable extends AppSettingsTable
     isPro,
     showWeekNumbers,
     accentId,
+    languageCode,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1630,6 +1642,15 @@ class $AppSettingsTableTable extends AppSettingsTable
         accentId.isAcceptableOrUnknown(data['accent_id']!, _accentIdMeta),
       );
     }
+    if (data.containsKey('language_code')) {
+      context.handle(
+        _languageCodeMeta,
+        languageCode.isAcceptableOrUnknown(
+          data['language_code']!,
+          _languageCodeMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1695,6 +1716,10 @@ class $AppSettingsTableTable extends AppSettingsTable
         DriftSqlType.int,
         data['${effectivePrefix}accent_id'],
       )!,
+      languageCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}language_code'],
+      ),
     );
   }
 
@@ -1719,6 +1744,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
   final bool isPro;
   final bool showWeekNumbers;
   final int accentId;
+  final String? languageCode;
   const SettingsRow({
     required this.id,
     required this.themeMode,
@@ -1734,6 +1760,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     required this.isPro,
     required this.showWeekNumbers,
     required this.accentId,
+    this.languageCode,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1756,6 +1783,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     map['is_pro'] = Variable<bool>(isPro);
     map['show_week_numbers'] = Variable<bool>(showWeekNumbers);
     map['accent_id'] = Variable<int>(accentId);
+    if (!nullToAbsent || languageCode != null) {
+      map['language_code'] = Variable<String>(languageCode);
+    }
     return map;
   }
 
@@ -1779,6 +1809,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       isPro: Value(isPro),
       showWeekNumbers: Value(showWeekNumbers),
       accentId: Value(accentId),
+      languageCode: languageCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(languageCode),
     );
   }
 
@@ -1802,6 +1835,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       isPro: serializer.fromJson<bool>(json['isPro']),
       showWeekNumbers: serializer.fromJson<bool>(json['showWeekNumbers']),
       accentId: serializer.fromJson<int>(json['accentId']),
+      languageCode: serializer.fromJson<String?>(json['languageCode']),
     );
   }
   @override
@@ -1822,6 +1856,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       'isPro': serializer.toJson<bool>(isPro),
       'showWeekNumbers': serializer.toJson<bool>(showWeekNumbers),
       'accentId': serializer.toJson<int>(accentId),
+      'languageCode': serializer.toJson<String?>(languageCode),
     };
   }
 
@@ -1840,6 +1875,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     bool? isPro,
     bool? showWeekNumbers,
     int? accentId,
+    Value<String?> languageCode = const Value.absent(),
   }) => SettingsRow(
     id: id ?? this.id,
     themeMode: themeMode ?? this.themeMode,
@@ -1859,6 +1895,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     isPro: isPro ?? this.isPro,
     showWeekNumbers: showWeekNumbers ?? this.showWeekNumbers,
     accentId: accentId ?? this.accentId,
+    languageCode: languageCode.present ? languageCode.value : this.languageCode,
   );
   SettingsRow copyWithCompanion(AppSettingsTableCompanion data) {
     return SettingsRow(
@@ -1890,6 +1927,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           ? data.showWeekNumbers.value
           : this.showWeekNumbers,
       accentId: data.accentId.present ? data.accentId.value : this.accentId,
+      languageCode: data.languageCode.present
+          ? data.languageCode.value
+          : this.languageCode,
     );
   }
 
@@ -1909,7 +1949,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           ..write('badgeType: $badgeType, ')
           ..write('isPro: $isPro, ')
           ..write('showWeekNumbers: $showWeekNumbers, ')
-          ..write('accentId: $accentId')
+          ..write('accentId: $accentId, ')
+          ..write('languageCode: $languageCode')
           ..write(')'))
         .toString();
   }
@@ -1930,6 +1971,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     isPro,
     showWeekNumbers,
     accentId,
+    languageCode,
   );
   @override
   bool operator ==(Object other) =>
@@ -1948,7 +1990,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           other.badgeType == this.badgeType &&
           other.isPro == this.isPro &&
           other.showWeekNumbers == this.showWeekNumbers &&
-          other.accentId == this.accentId);
+          other.accentId == this.accentId &&
+          other.languageCode == this.languageCode);
 }
 
 class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
@@ -1966,6 +2009,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
   final Value<bool> isPro;
   final Value<bool> showWeekNumbers;
   final Value<int> accentId;
+  final Value<String?> languageCode;
   final Value<int> rowid;
   const AppSettingsTableCompanion({
     this.id = const Value.absent(),
@@ -1982,6 +2026,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
     this.isPro = const Value.absent(),
     this.showWeekNumbers = const Value.absent(),
     this.accentId = const Value.absent(),
+    this.languageCode = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   AppSettingsTableCompanion.insert({
@@ -1999,6 +2044,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
     this.isPro = const Value.absent(),
     this.showWeekNumbers = const Value.absent(),
     this.accentId = const Value.absent(),
+    this.languageCode = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   static Insertable<SettingsRow> custom({
@@ -2016,6 +2062,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
     Expression<bool>? isPro,
     Expression<bool>? showWeekNumbers,
     Expression<int>? accentId,
+    Expression<String>? languageCode,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2034,6 +2081,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
       if (isPro != null) 'is_pro': isPro,
       if (showWeekNumbers != null) 'show_week_numbers': showWeekNumbers,
       if (accentId != null) 'accent_id': accentId,
+      if (languageCode != null) 'language_code': languageCode,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2053,6 +2101,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
     Value<bool>? isPro,
     Value<bool>? showWeekNumbers,
     Value<int>? accentId,
+    Value<String?>? languageCode,
     Value<int>? rowid,
   }) {
     return AppSettingsTableCompanion(
@@ -2070,6 +2119,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
       isPro: isPro ?? this.isPro,
       showWeekNumbers: showWeekNumbers ?? this.showWeekNumbers,
       accentId: accentId ?? this.accentId,
+      languageCode: languageCode ?? this.languageCode,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2119,6 +2169,9 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
     if (accentId.present) {
       map['accent_id'] = Variable<int>(accentId.value);
     }
+    if (languageCode.present) {
+      map['language_code'] = Variable<String>(languageCode.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2142,6 +2195,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<SettingsRow> {
           ..write('isPro: $isPro, ')
           ..write('showWeekNumbers: $showWeekNumbers, ')
           ..write('accentId: $accentId, ')
+          ..write('languageCode: $languageCode, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3982,6 +4036,7 @@ typedef $$AppSettingsTableTableCreateCompanionBuilder =
       Value<bool> isPro,
       Value<bool> showWeekNumbers,
       Value<int> accentId,
+      Value<String?> languageCode,
       Value<int> rowid,
     });
 typedef $$AppSettingsTableTableUpdateCompanionBuilder =
@@ -4000,6 +4055,7 @@ typedef $$AppSettingsTableTableUpdateCompanionBuilder =
       Value<bool> isPro,
       Value<bool> showWeekNumbers,
       Value<int> accentId,
+      Value<String?> languageCode,
       Value<int> rowid,
     });
 
@@ -4079,6 +4135,11 @@ class $$AppSettingsTableTableFilterComposer
 
   ColumnFilters<int> get accentId => $composableBuilder(
     column: $table.accentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get languageCode => $composableBuilder(
+    column: $table.languageCode,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -4161,6 +4222,11 @@ class $$AppSettingsTableTableOrderingComposer
     column: $table.accentId,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get languageCode => $composableBuilder(
+    column: $table.languageCode,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableTableAnnotationComposer
@@ -4227,6 +4293,11 @@ class $$AppSettingsTableTableAnnotationComposer
 
   GeneratedColumn<int> get accentId =>
       $composableBuilder(column: $table.accentId, builder: (column) => column);
+
+  GeneratedColumn<String> get languageCode => $composableBuilder(
+    column: $table.languageCode,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableTableManager
@@ -4276,6 +4347,7 @@ class $$AppSettingsTableTableTableManager
                 Value<bool> isPro = const Value.absent(),
                 Value<bool> showWeekNumbers = const Value.absent(),
                 Value<int> accentId = const Value.absent(),
+                Value<String?> languageCode = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsTableCompanion(
                 id: id,
@@ -4292,6 +4364,7 @@ class $$AppSettingsTableTableTableManager
                 isPro: isPro,
                 showWeekNumbers: showWeekNumbers,
                 accentId: accentId,
+                languageCode: languageCode,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4310,6 +4383,7 @@ class $$AppSettingsTableTableTableManager
                 Value<bool> isPro = const Value.absent(),
                 Value<bool> showWeekNumbers = const Value.absent(),
                 Value<int> accentId = const Value.absent(),
+                Value<String?> languageCode = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsTableCompanion.insert(
                 id: id,
@@ -4326,6 +4400,7 @@ class $$AppSettingsTableTableTableManager
                 isPro: isPro,
                 showWeekNumbers: showWeekNumbers,
                 accentId: accentId,
+                languageCode: languageCode,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

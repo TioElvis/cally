@@ -20,6 +20,7 @@ class CalApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pref = ref.watch(themePrefProvider);
     final accent = accentColor(ref.watch(accentProvider));
+    final override = ref.watch(localeProvider);
     final brightness = switch (pref) {
       ThemePref.system => null, // follow the platform
       ThemePref.light => Brightness.light,
@@ -29,7 +30,9 @@ class CalApp extends ConsumerWidget {
       title: 'Cally',
       debugShowCheckedModeBanner: false,
       theme: buildCupertinoTheme(brightness, accent),
-      // Follow the phone's language automatically (falls back to English).
+      // Use the manual override when set, otherwise follow the phone's
+      // language automatically (both fall back to English).
+      locale: override,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       localeResolutionCallback: (device, supported) {

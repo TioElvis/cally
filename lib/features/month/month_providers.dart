@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/time/month_grid.dart';
@@ -44,6 +45,12 @@ final themePrefProvider = Provider<ThemePref>((ref) => _settings(ref).themeMode)
 
 /// Chosen accent palette index, from settings.
 final accentProvider = Provider<int>((ref) => _settings(ref).accentId);
+
+/// Manual language override, from settings. null = follow the device language.
+final localeProvider = Provider<Locale?>((ref) {
+  final code = _settings(ref).languageCode;
+  return code == null ? null : Locale(code);
+});
 
 final calendarsProvider = StreamProvider<List<Calendar>>(
     (ref) => ref.watch(repositoryProvider).watchCalendars());
