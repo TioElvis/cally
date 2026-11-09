@@ -1,7 +1,9 @@
 package com.cally.cally
 
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.net.Uri
@@ -33,6 +35,20 @@ class CallyWidgetProvider : HomeWidgetProvider() {
     )
 
     private fun colorFor(i: Int): Int = palette[((i % palette.size) + palette.size) % palette.size]
+
+    /** Repaint on a device light/dark switch so "system" theme stays in sync. */
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+        if (intent.action == Intent.ACTION_CONFIGURATION_CHANGED) {
+            val mgr = AppWidgetManager.getInstance(context)
+            val ids = mgr.getAppWidgetIds(ComponentName(context, CallyWidgetProvider::class.java))
+            if (ids.isNotEmpty()) {
+                val prefs = context.getSharedPreferences(
+                    "HomeWidgetPreferences", Context.MODE_PRIVATE)
+                onUpdate(context, mgr, ids, prefs)
+            }
+        }
+    }
 
     override fun onUpdate(
         context: Context,

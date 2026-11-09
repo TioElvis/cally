@@ -138,7 +138,7 @@ struct CellView: View {
             }
             Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, minHeight: 46, alignment: .topLeading)
+        .frame(maxWidth: .infinity, minHeight: 40, alignment: .topLeading)
         .opacity(cell.out ? 0.5 : 1)
     }
 }
@@ -200,13 +200,8 @@ struct UpcomingView: View {
 
 // MARK: - Widgets
 
-// The biggest month grid the device offers: extra-large on iPad, large on iPhone.
-private var monthFamilies: [WidgetFamily] {
-    if #available(iOSApplicationExtension 15.0, *) {
-        return [.systemLarge, .systemExtraLarge]
-    }
-    return [.systemLarge]
-}
+// A square month grid (the largest square family on iPhone).
+private var monthFamilies: [WidgetFamily] { [.systemLarge] }
 
 struct CallyMonthWidget: Widget {
     var body: some WidgetConfiguration {
