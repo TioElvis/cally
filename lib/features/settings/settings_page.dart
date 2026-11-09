@@ -6,8 +6,6 @@ import '../../core/time/formats.dart';
 import '../../data/models.dart';
 import '../backup/backup_page.dart';
 import '../calendars/calendars_page.dart';
-import '../integrations/device_calendar_service.dart';
-import '../integrations/integrations_providers.dart';
 import '../month/month_providers.dart';
 import '../notifications/notification_providers.dart';
 import '../notifications/restore_page.dart';
@@ -171,88 +169,19 @@ class SettingsPage extends ConsumerWidget {
                   onTap: () => Navigator.of(context)
                       .push(CupertinoPageRoute(builder: (_) => const BackupPage())),
                 ),
-                CupertinoListTile(
-                  title: const Text('Import from device calendar'),
-                  leading: const Icon(CupertinoIcons.calendar_badge_plus),
-                  trailing: const CupertinoListTileChevron(),
-                  onTap: () => _importFromDevice(context, ref),
-                ),
               ],
             ),
 
             CupertinoListSection.insetGrouped(
               header: const Text('About'),
               children: const [
-                CupertinoListTile(title: Text('Cally'), additionalInfo: Text('M7 · local')),
+                CupertinoListTile(title: Text('Cally'), additionalInfo: Text('Local · free')),
               ],
             ),
           ],
         ),
       ),
     );
-  }
-
-  Future<void> _importFromDevice(BuildContext context, WidgetRef ref) async {
-    final svc = ref.read(deviceCalendarServiceProvider);
-
-    Future<void> info(String title, String msg) async {
-      if (!context.mounted) return;
-      await showCupertinoDialog<void>(
-        context: context,
-        builder: (c) => CupertinoAlertDialog(
-          title: Text(title),
-          content: Text(msg),
-          actions: [
-            CupertinoDialogAction(
-                isDefaultAction: true,
-                onPressed: () => Navigator.pop(c),
-                child: const Text('OK')),
-          ],
-        ),
-      );
-    }
-
-    if (!svc.available) {
-      return info('Not available yet',
-          'Importing from the device calendar needs the device_calendar plugin, '
-          'which is currently incompatible with the Android build (see '
-          'docs/INTEGRATIONS.md). It will be enabled in a later update.');
-    }
-    if (!await svc.ensurePermission()) {
-      return info('Permission needed',
-          'Allow calendar access to import. On a desktop build there is no device calendar.');
-    }
-    final cals = await svc.calendars();
-    if (!context.mounted) return;
-    if (cals.isEmpty) return info('No calendars', 'No device calendars were found.');
-
-    final chosen = await showCupertinoModalPopup<DeviceCal>(
-      context: context,
-      builder: (c) => CupertinoActionSheet(
-        title: const Text('Import which calendar?'),
-        actions: cals
-            .map((cal) => CupertinoActionSheetAction(
-                  onPressed: () => Navigator.pop(c, cal),
-                  child: Text(cal.name),
-                ))
-            .toList(),
-        cancelButton: CupertinoActionSheetAction(
-            onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
-      ),
-    );
-    if (chosen == null) return;
-
-    final repo = ref.read(repositoryProvider);
-    final targetId = await repo.newCalendar('Imported: ${chosen.name}', 7);
-    final now = DateTime.now();
-    final n = await svc.importInto(
-      repo,
-      deviceCalendarId: chosen.id,
-      targetCalendarId: targetId,
-      from: now.subtract(const Duration(days: 180)),
-      to: now.add(const Duration(days: 365)),
-    );
-    await info('Imported', 'Added $n event${n == 1 ? '' : 's'} from "${chosen.name}".');
   }
 
   Future<void> _requestPermission(BuildContext context, WidgetRef ref) async {

@@ -8,7 +8,7 @@ See [`docs/PLAN.md`](docs/PLAN.md) for architecture and the roadmap, and
 [`docs/DESIGN.md`](docs/DESIGN.md) for the design system.
 
 ## Status
-**M9 — free, custom brand, "Cally":** removed the Pro paywall — every feature is free, no ads, no tracking. New custom teal brand accent. App shows as "Cally" on iOS/Android. (Apple/Google calendar connection is blocked on the device_calendar plugin — see docs/INTEGRATIONS.md.) Built on M0–M8.
+**Current:** fully **local**, fully **free** (no Pro/ads/tracking), custom teal brand, shown as "Cally". Connecting to Apple/Google Calendar is deferred to the future (no API keys yet); the integration port is scaffolded for later. Built on M0–M8 (see docs/).
 grid with today + selected-day highlighting, three-tone event chips, multi-day
 spans and a selected-day agenda. No external services yet (everything is local;
 device calendars, iCloud and purchases come in a later milestone).
