@@ -7,14 +7,15 @@ import 'package:flutter/cupertino.dart';
 class Tokens {
   Tokens._();
 
-  // Brand accent (Cally periwinkle) — resolves per brightness.
+  // Brand accent (Cally teal) — resolves per brightness. Our custom palette
+  // colour: used for the selected day, the Today pill and links.
   static const brand = CupertinoDynamicColor.withBrightness(
-    color: Color(0xFF5B6CF0),
-    darkColor: Color(0xFF8B97FF),
+    color: Color(0xFF0D9488), // teal-600
+    darkColor: Color(0xFF2DD4BF), // teal-400
   );
   static const onBrand = CupertinoDynamicColor.withBrightness(
     color: Color(0xFFFFFFFF),
-    darkColor: Color(0xFF0B0B0F),
+    darkColor: Color(0xFF07201D),
   );
 
   // Spacing

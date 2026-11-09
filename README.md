@@ -8,7 +8,7 @@ See [`docs/PLAN.md`](docs/PLAN.md) for architecture and the roadmap, and
 [`docs/DESIGN.md`](docs/DESIGN.md) for the design system.
 
 ## Status
-**M8 — integrations** (device-pending): the notification timezone is wired (`flutter_timezone`), a real one-time-purchase IAP adapter (`in_app_purchase`) is committed behind the Pro port, and device-calendar import is scaffolded behind a port — currently blocked by the `device_calendar` plugin's Android Gradle incompatibility (see docs/INTEGRATIONS.md). Built on M0–M7.
+**M9 — free, custom brand, "Cally":** removed the Pro paywall — every feature is free, no ads, no tracking. New custom teal brand accent. App shows as "Cally" on iOS/Android. (Apple/Google calendar connection is blocked on the device_calendar plugin — see docs/INTEGRATIONS.md.) Built on M0–M8.
 grid with today + selected-day highlighting, three-tone event chips, multi-day
 spans and a selected-day agenda. No external services yet (everything is local;
 device calendars, iCloud and purchases come in a later milestone).

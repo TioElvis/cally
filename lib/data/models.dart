@@ -66,8 +66,8 @@ class AppSettings {
     this.showWeekNumbers = false,
   });
 
-  /// Effective flag (a feature is on only when enabled AND Pro is unlocked).
-  bool get weekNumbersEnabled => isPro && showWeekNumbers;
+  /// Week numbers are a free feature now (Cally is fully free).
+  bool get weekNumbersEnabled => showWeekNumbers;
 
   factory AppSettings.from(SettingsRow? r) => r == null
       ? const AppSettings()

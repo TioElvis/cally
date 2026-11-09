@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 
 import '../../core/time/formats.dart';
 import '../../data/models.dart';
-import '../../core/theme/tokens.dart';
 import '../backup/backup_page.dart';
 import '../calendars/calendars_page.dart';
 import '../integrations/device_calendar_service.dart';
@@ -12,8 +11,6 @@ import '../integrations/integrations_providers.dart';
 import '../month/month_providers.dart';
 import '../notifications/notification_providers.dart';
 import '../notifications/restore_page.dart';
-import '../pro/pro.dart';
-import '../pro/pro_page.dart';
 
 const _alertOptions = <int?>[null, 0, 5, 10, 15, 30, 60, 120];
 
@@ -25,10 +22,6 @@ class SettingsPage extends ConsumerWidget {
     final settings = ref.watch(settingsProvider).value ?? const AppSettings();
     final repo = ref.read(settingsRepositoryProvider);
     final use24h = settings.use24h;
-    final isPro = ref.watch(isProProvider);
-
-    void openPaywall() => Navigator.of(context)
-        .push(CupertinoPageRoute(builder: (_) => const ProPage()));
 
     return CupertinoPageScaffold(
       backgroundColor: CupertinoColors.systemGroupedBackground.resolveFrom(context),
@@ -36,35 +29,16 @@ class SettingsPage extends ConsumerWidget {
       child: SafeArea(
         child: ListView(
           children: [
-            // --- Pro ---
-            CupertinoListSection.insetGrouped(
-              children: [
-                CupertinoListTile(
-                  leading: Icon(CupertinoIcons.star_circle_fill,
-                      color: Tokens.brand.resolveFrom(context)),
-                  title: Text(isPro ? 'Cally Pro' : 'Unlock Cally Pro'),
-                  additionalInfo: isPro ? const Text('Active') : null,
-                  trailing: const CupertinoListTileChevron(),
-                  onTap: openPaywall,
-                ),
-              ],
-            ),
-
             // --- Appearance ---
             CupertinoListSection.insetGrouped(
               header: const Text('Appearance'),
               children: [
                 CupertinoListTile(
                   title: const Text('Week numbers'),
-                  additionalInfo: isPro ? null : const Text('Pro'),
-                  trailing: isPro
-                      ? CupertinoSwitch(
-                          value: settings.showWeekNumbers,
-                          onChanged: repo.setShowWeekNumbers,
-                        )
-                      : Icon(CupertinoIcons.lock_fill,
-                          size: 18, color: CupertinoColors.tertiaryLabel.resolveFrom(context)),
-                  onTap: isPro ? null : openPaywall,
+                  trailing: CupertinoSwitch(
+                    value: settings.showWeekNumbers,
+                    onChanged: repo.setShowWeekNumbers,
+                  ),
                 ),
                 CupertinoListTile(
                   title: const Text('Theme'),
