@@ -1,3 +1,4 @@
+import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,20 +76,21 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
   }
 
   Future<void> _delete() async {
+    final t = AppLocalizations.of(context);
     final ok = await showCupertinoDialog<bool>(
       context: context,
       builder: (c) => CupertinoAlertDialog(
-        title: const Text('Delete event?'),
+        title: Text(t.deleteEventQ),
         content: d.recurrence.repeats
-            ? const Text('This deletes the whole repeating series.')
+            ? Text(t.deleteSeriesNote)
             : null,
         actions: [
           CupertinoDialogAction(
-              onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+              onPressed: () => Navigator.pop(c, false), child: Text(t.cancel)),
           CupertinoDialogAction(
               isDestructiveAction: true,
               onPressed: () => Navigator.pop(c, true),
-              child: const Text('Delete')),
+              child: Text(t.delete)),
         ],
       ),
     );
@@ -103,18 +105,19 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
   Widget build(BuildContext context) {
     final cals = ref.watch(calendarsProvider).value ?? const [];
     final use24h = ref.watch(use24hProvider);
+    final t = AppLocalizations.of(context);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         leading: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(t.cancel),
         ),
-        middle: Text(_isEditing ? 'Edit' : 'New event'),
+        middle: Text(_isEditing ? t.edit : t.newEvent),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: _save,
-          child: const Text('Save', style: TextStyle(fontWeight: FontWeight.w600)),
+          child: Text(t.save, style: const TextStyle(fontWeight: FontWeight.w600)),
         ),
       ),
       child: SafeArea(
@@ -126,7 +129,7 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
               child: CupertinoTextField(
                 controller: _title,
                 autofocus: !_isEditing,
-                placeholder: 'Event name',
+                placeholder: t.eventName,
                 decoration: null,
                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
                 placeholderStyle: TextStyle(
@@ -139,20 +142,20 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
             _Group(children: [
               _ToggleRow(
                 icon: CupertinoIcons.clock,
-                label: 'All-day',
+                label: t.allDay,
                 value: d.allDay,
                 onChanged: (v) => setState(() => d.allDay = v),
               ),
               _TapRow(
                 icon: CupertinoIcons.calendar,
-                label: 'Starts',
+                label: t.starts,
                 value: _fmt(d.start, d.allDay, use24h),
                 onTap: () => _pickStart(),
               ),
               if (!d.allDay)
                 _TapRow(
                   icon: null,
-                  label: 'Ends',
+                  label: t.ends,
                   value: _fmt(d.end, d.allDay, use24h),
                   onTap: () => _pickEnd(),
                 ),
@@ -160,7 +163,7 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
             _Group(children: [
               _TapRow(
                 icon: CupertinoIcons.circle_grid_3x3,
-                label: 'Calendar',
+                label: t.calendar,
                 value: cals
                         .cast<Calendar?>()
                         .firstWhere((c) => c?.id == d.calendarId, orElse: () => null)
@@ -176,14 +179,14 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
             _Group(children: [
               _TapRow(
                 icon: CupertinoIcons.repeat,
-                label: 'Repeat',
-                value: _repeatLabel(d.recurrence.freq),
+                label: t.repeat,
+                value: _repeatLabel(t, d.recurrence.freq),
                 onTap: () => _pickRepeat(),
               ),
               _TapRow(
                 icon: CupertinoIcons.bell,
-                label: 'Alert',
-                value: _alertLabel(d.alertMinutes),
+                label: t.alert,
+                value: _alertLabel(t, d.alertMinutes),
                 onTap: () => _pickAlert(),
               ),
             ]),
@@ -192,7 +195,7 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
                 padding: const EdgeInsets.all(12),
                 child: CupertinoTextField(
                   controller: _notes,
-                  placeholder: 'Notes',
+                  placeholder: t.notes,
                   decoration: null,
                   maxLines: 4,
                   minLines: 2,
@@ -206,7 +209,7 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
                   color: CupertinoColors.systemGrey6.resolveFrom(context),
                   borderRadius: BorderRadius.circular(Tokens.rButton),
                   onPressed: _delete,
-                  child: Text('Delete event',
+                  child: Text(t.deleteEvent,
                       style: TextStyle(color: CupertinoColors.systemRed.resolveFrom(context))),
                 ),
               ),
@@ -234,10 +237,11 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
   }
 
   Future<void> _pickCalendar(List<Calendar> cals) async {
+    final t = AppLocalizations.of(context);
     await showCupertinoModalPopup<void>(
       context: context,
       builder: (c) => CupertinoActionSheet(
-        title: const Text('Calendar'),
+        title: Text(t.calendar),
         actions: cals
             .map((cal) => CupertinoActionSheetAction(
                   onPressed: () {
@@ -248,23 +252,24 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
                 ))
             .toList(),
         cancelButton: CupertinoActionSheetAction(
-            onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(c), child: Text(t.cancel)),
       ),
     );
   }
 
   Future<void> _pickRepeat() async {
-    const options = {
-      Freq.none: 'Doesn\'t repeat',
-      Freq.daily: 'Daily',
-      Freq.weekly: 'Weekly',
-      Freq.monthly: 'Monthly',
-      Freq.yearly: 'Yearly',
+    final t = AppLocalizations.of(context);
+    final options = {
+      Freq.none: t.repeatNever,
+      Freq.daily: t.repeatDaily,
+      Freq.weekly: t.repeatWeekly,
+      Freq.monthly: t.repeatMonthly,
+      Freq.yearly: t.repeatYearly,
     };
     await showCupertinoModalPopup<void>(
       context: context,
       builder: (c) => CupertinoActionSheet(
-        title: const Text('Repeat'),
+        title: Text(t.repeat),
         actions: options.entries
             .map((e) => CupertinoActionSheetAction(
                   onPressed: () {
@@ -275,36 +280,29 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
                 ))
             .toList(),
         cancelButton: CupertinoActionSheetAction(
-            onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(c), child: Text(t.cancel)),
       ),
     );
   }
 
   Future<void> _pickAlert() async {
-    const options = <int?, String>{
-      null: 'None',
-      0: 'At time of event',
-      5: '5 minutes before',
-      10: '10 minutes before',
-      15: '15 minutes before',
-      30: '30 minutes before',
-      60: '1 hour before',
-    };
+    final t = AppLocalizations.of(context);
+    const values = <int?>[null, 0, 5, 10, 15, 30, 60];
     await showCupertinoModalPopup<void>(
       context: context,
       builder: (c) => CupertinoActionSheet(
-        title: const Text('Alert'),
-        actions: options.entries
-            .map((e) => CupertinoActionSheetAction(
+        title: Text(t.alert),
+        actions: values
+            .map((m) => CupertinoActionSheetAction(
                   onPressed: () {
-                    setState(() => d.alertMinutes = e.key);
+                    setState(() => d.alertMinutes = m);
                     Navigator.pop(c);
                   },
-                  child: Text(e.value),
+                  child: Text(_alertLabel(t, m)),
                 ))
             .toList(),
         cancelButton: CupertinoActionSheetAction(
-            onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(c), child: Text(t.cancel)),
       ),
     );
   }
@@ -312,19 +310,19 @@ class _EventEditorSheetState extends ConsumerState<EventEditorSheet> {
   String _fmt(DateTime dt, bool allDay, bool use24h) =>
       allDay ? fmtDate(dt) : fmtDateTime(dt, use24h);
 
-  String _repeatLabel(Freq f) => const {
-        Freq.none: 'Doesn\'t repeat',
-        Freq.daily: 'Daily',
-        Freq.weekly: 'Weekly',
-        Freq.monthly: 'Monthly',
-        Freq.yearly: 'Yearly',
+  String _repeatLabel(AppLocalizations t, Freq f) => {
+        Freq.none: t.repeatNever,
+        Freq.daily: t.repeatDaily,
+        Freq.weekly: t.repeatWeekly,
+        Freq.monthly: t.repeatMonthly,
+        Freq.yearly: t.repeatYearly,
       }[f]!;
 
-  String _alertLabel(int? m) {
-    if (m == null) return 'None';
-    if (m == 0) return 'At time of event';
-    if (m == 60) return '1 hour before';
-    return '$m minutes before';
+  String _alertLabel(AppLocalizations t, int? m) {
+    if (m == null) return t.alertNone;
+    if (m == 0) return t.atTimeOfEvent;
+    if (m % 60 == 0) return t.hoursBefore(m ~/ 60);
+    return t.minutesBefore(m);
   }
 }
 
@@ -347,7 +345,7 @@ Future<DateTime?> _pickDateTime(BuildContext context, DateTime initial,
                 children: [
                   CupertinoButton(
                     onPressed: () => Navigator.pop(context, temp),
-                    child: const Text('Done', style: TextStyle(fontWeight: FontWeight.w600)),
+                    child: Text(AppLocalizations.of(context).done, style: const TextStyle(fontWeight: FontWeight.w600)),
                   ),
                 ],
               ),
@@ -477,7 +475,7 @@ class _ColorRow extends StatelessWidget {
                     size: 18,
                     color: CupertinoColors.secondaryLabel.resolveFrom(context)),
               ),
-              Text('Color', style: AppText.pill(context)),
+              Text(AppLocalizations.of(context).color, style: AppText.pill(context)),
             ],
           ),
           const SizedBox(height: 12),

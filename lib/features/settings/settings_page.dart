@@ -1,3 +1,4 @@
+import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -19,36 +20,37 @@ class SettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider).value ?? const AppSettings();
+    final t = AppLocalizations.of(context);
     final repo = ref.read(settingsRepositoryProvider);
     final use24h = settings.use24h;
 
     return CupertinoPageScaffold(
       backgroundColor: CupertinoColors.systemGroupedBackground.resolveFrom(context),
-      navigationBar: const CupertinoNavigationBar(middle: Text('Settings')),
+      navigationBar: CupertinoNavigationBar(middle: Text(t.settings)),
       child: SafeArea(
         child: ListView(
           children: [
             // --- Appearance ---
             CupertinoListSection.insetGrouped(
-              header: const Text('Appearance'),
+              header: Text(t.appearance),
               children: [
                 CupertinoListTile(
-                  title: const Text('Week numbers'),
+                  title: Text(t.weekNumbers),
                   trailing: CupertinoSwitch(
                     value: settings.showWeekNumbers,
                     onChanged: repo.setShowWeekNumbers,
                   ),
                 ),
                 CupertinoListTile(
-                  title: const Text('Theme'),
+                  title: Text(t.theme),
                   trailing: SizedBox(
                     width: 220,
                     child: CupertinoSlidingSegmentedControl<ThemePref>(
                       groupValue: settings.themeMode,
-                      children: const {
-                        ThemePref.system: Text('System'),
-                        ThemePref.light: Text('Light'),
-                        ThemePref.dark: Text('Dark'),
+                      children: {
+                        ThemePref.system: Text(t.system),
+                        ThemePref.light: Text(t.light),
+                        ThemePref.dark: Text(t.dark),
                       },
                       onValueChanged: (v) {
                         if (v != null) repo.setThemeMode(v);
@@ -57,13 +59,13 @@ class SettingsPage extends ConsumerWidget {
                   ),
                 ),
                 CupertinoListTile(
-                  title: const Text('First day of week'),
+                  title: Text(t.firstDayOfWeek),
                   additionalInfo: Text(_weekdayName(settings.weekStart)),
                   trailing: const CupertinoListTileChevron(),
                   onTap: () => _pickWeekStart(context, repo, settings.weekStart),
                 ),
                 CupertinoListTile(
-                  title: const Text('24-hour time'),
+                  title: Text(t.use24h),
                   trailing: CupertinoSwitch(value: settings.use24h, onChanged: repo.setUse24h),
                 ),
                 _AccentRow(selected: settings.accentId, onPick: repo.setAccent),
@@ -72,30 +74,30 @@ class SettingsPage extends ConsumerWidget {
 
             // --- Notifications ---
             CupertinoListSection.insetGrouped(
-              header: const Text('Notifications'),
+              header: Text(t.notifications),
               children: [
                 CupertinoListTile(
-                  title: const Text('Enable notifications'),
+                  title: Text(t.enableNotifications),
                   leading: const Icon(CupertinoIcons.bell),
                   trailing: const CupertinoListTileChevron(),
                   onTap: () => _requestPermission(context, ref),
                 ),
                 CupertinoListTile(
-                  title: const Text('Default alert'),
-                  additionalInfo: Text(_alertLabel(settings.defaultAlertTimed)),
+                  title: Text(t.defaultAlert),
+                  additionalInfo: Text(_alertLabel(t, settings.defaultAlertTimed)),
                   trailing: const CupertinoListTileChevron(),
                   onTap: () => _pickAlert(context, settings.defaultAlertTimed,
                       (m) => repo.setDefaultAlertTimed(m)),
                 ),
                 CupertinoListTile(
-                  title: const Text('Default alert (all-day)'),
-                  additionalInfo: Text(_alertLabel(settings.defaultAlertAllDay)),
+                  title: Text(t.defaultAlertAllDay),
+                  additionalInfo: Text(_alertLabel(t, settings.defaultAlertAllDay)),
                   trailing: const CupertinoListTileChevron(),
                   onTap: () => _pickAlert(context, settings.defaultAlertAllDay,
                       (m) => repo.setDefaultAlertAllDay(m)),
                 ),
                 CupertinoListTile(
-                  title: const Text('Morning digest'),
+                  title: Text(t.morningDigest),
                   additionalInfo:
                       settings.digestMorningOn ? Text(_hhmm(settings.digestMorningMin, use24h)) : null,
                   trailing: CupertinoSwitch(
@@ -108,7 +110,7 @@ class SettingsPage extends ConsumerWidget {
                       : null,
                 ),
                 CupertinoListTile(
-                  title: const Text('Evening digest (tomorrow)'),
+                  title: Text(t.eveningDigest),
                   additionalInfo:
                       settings.digestEveningOn ? Text(_hhmm(settings.digestEveningMin, use24h)) : null,
                   trailing: CupertinoSwitch(
@@ -121,15 +123,15 @@ class SettingsPage extends ConsumerWidget {
                       : null,
                 ),
                 CupertinoListTile(
-                  title: const Text('App icon badge'),
+                  title: Text(t.appIconBadge),
                   trailing: SizedBox(
                     width: 200,
                     child: CupertinoSlidingSegmentedControl<BadgeType>(
                       groupValue: settings.badgeType,
-                      children: const {
-                        BadgeType.none: Text('None'),
-                        BadgeType.date: Text('Date'),
-                        BadgeType.count: Text('Count'),
+                      children: {
+                        BadgeType.none: Text(t.badgeNone),
+                        BadgeType.date: Text(t.badgeDate),
+                        BadgeType.count: Text(t.badgeCount),
                       },
                       onValueChanged: (v) {
                         if (v != null) repo.setBadgeType(v);
@@ -138,7 +140,7 @@ class SettingsPage extends ConsumerWidget {
                   ),
                 ),
                 CupertinoListTile(
-                  title: const Text('Restore events'),
+                  title: Text(t.restoreEvents),
                   leading: const Icon(CupertinoIcons.arrow_counterclockwise),
                   trailing: const CupertinoListTileChevron(),
                   onTap: () => Navigator.of(context)
@@ -149,10 +151,10 @@ class SettingsPage extends ConsumerWidget {
 
             // --- Calendars ---
             CupertinoListSection.insetGrouped(
-              header: const Text('Calendars'),
+              header: Text(t.calendars),
               children: [
                 CupertinoListTile(
-                  title: const Text('Manage calendars'),
+                  title: Text(t.manageCalendars),
                   leading: const Icon(CupertinoIcons.circle_grid_3x3),
                   trailing: const CupertinoListTileChevron(),
                   onTap: () => Navigator.of(context)
@@ -162,10 +164,10 @@ class SettingsPage extends ConsumerWidget {
             ),
 
             CupertinoListSection.insetGrouped(
-              header: const Text('Data'),
+              header: Text(t.data),
               children: [
                 CupertinoListTile(
-                  title: const Text('Backup & restore'),
+                  title: Text(t.backupRestore),
                   leading: const Icon(CupertinoIcons.square_arrow_up_on_square),
                   trailing: const CupertinoListTileChevron(),
                   onTap: () => Navigator.of(context)
@@ -175,9 +177,9 @@ class SettingsPage extends ConsumerWidget {
             ),
 
             CupertinoListSection.insetGrouped(
-              header: const Text('About'),
-              children: const [
-                CupertinoListTile(title: Text('Cally'), additionalInfo: Text('Local · free')),
+              header: Text(t.about),
+              children: [
+                CupertinoListTile(title: const Text('Cally'), additionalInfo: Text(t.localFree)),
               ],
             ),
           ],
@@ -189,18 +191,19 @@ class SettingsPage extends ConsumerWidget {
   Future<void> _requestPermission(BuildContext context, WidgetRef ref) async {
     final granted = await ref.read(notificationServiceProvider).requestPermission();
     if (!context.mounted) return;
+    final t = AppLocalizations.of(context);
     showCupertinoDialog<void>(
       context: context,
       builder: (c) => CupertinoAlertDialog(
-        title: Text(granted ? 'Notifications enabled' : 'Notifications off'),
+        title: Text(granted ? t.notificationsEnabled : t.notificationsOff),
         content: Text(granted
-            ? 'Cally can now remind you about events.'
-            : 'Allow notifications in system settings to get alerts.'),
+            ? t.notificationsOnMsg
+            : t.notificationsOffMsg),
         actions: [
           CupertinoDialogAction(
               isDefaultAction: true,
               onPressed: () => Navigator.pop(c),
-              child: const Text('OK')),
+              child: Text(t.ok)),
         ],
       ),
     );
@@ -208,21 +211,22 @@ class SettingsPage extends ConsumerWidget {
 
   Future<void> _pickAlert(
       BuildContext context, int? current, ValueChanged<int?> onPick) async {
+    final t = AppLocalizations.of(context);
     await showCupertinoModalPopup<void>(
       context: context,
       builder: (c) => CupertinoActionSheet(
-        title: const Text('Default alert'),
+        title: Text(t.defaultAlert),
         actions: _alertOptions
             .map((m) => CupertinoActionSheetAction(
                   onPressed: () {
                     onPick(m);
                     Navigator.pop(c);
                   },
-                  child: Text(_alertLabel(m)),
+                  child: Text(_alertLabel(t, m)),
                 ))
             .toList(),
         cancelButton: CupertinoActionSheetAction(
-            onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(c), child: Text(t.cancel)),
       ),
     );
   }
@@ -249,7 +253,7 @@ class SettingsPage extends ConsumerWidget {
                         onPick(minutes);
                         Navigator.pop(context);
                       },
-                      child: const Text('Done', style: TextStyle(fontWeight: FontWeight.w600)),
+                      child: Text(AppLocalizations.of(context).done, style: const TextStyle(fontWeight: FontWeight.w600)),
                     ),
                   ],
                 ),
@@ -271,11 +275,12 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Future<void> _pickWeekStart(BuildContext context, repo, int current) async {
+    final t = AppLocalizations.of(context);
     const options = [DateTime.monday, DateTime.sunday, DateTime.saturday];
     await showCupertinoModalPopup<void>(
       context: context,
       builder: (c) => CupertinoActionSheet(
-        title: const Text('First day of week'),
+        title: Text(t.firstDayOfWeek),
         actions: options
             .map((w) => CupertinoActionSheetAction(
                   onPressed: () {
@@ -286,7 +291,7 @@ class SettingsPage extends ConsumerWidget {
                 ))
             .toList(),
         cancelButton: CupertinoActionSheetAction(
-            onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(c), child: Text(t.cancel)),
       ),
     );
   }
@@ -296,14 +301,11 @@ class SettingsPage extends ConsumerWidget {
     return DateFormat('EEEE').format(date);
   }
 
-  static String _alertLabel(int? minutes) {
-    if (minutes == null) return 'None';
-    if (minutes == 0) return 'At time of event';
-    if (minutes % 60 == 0) {
-      final h = minutes ~/ 60;
-      return '$h hour${h == 1 ? '' : 's'} before';
-    }
-    return '$minutes minutes before';
+  static String _alertLabel(AppLocalizations t, int? minutes) {
+    if (minutes == null) return t.alertNone;
+    if (minutes == 0) return t.atTimeOfEvent;
+    if (minutes % 60 == 0) return t.hoursBefore(minutes ~/ 60);
+    return t.minutesBefore(minutes);
   }
 
   static String _hhmm(int minutesFromMidnight, bool use24h) =>
@@ -322,9 +324,9 @@ class _AccentRow extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(bottom: 10),
-            child: Text('Accent color'),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Text(AppLocalizations.of(context).accentColor),
           ),
           Wrap(
             spacing: 14,

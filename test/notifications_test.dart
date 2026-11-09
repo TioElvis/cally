@@ -1,5 +1,7 @@
 import 'package:drift/native.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:cally/l10n/app_localizations.dart';
 import 'package:cally/core/time/recurrence.dart';
 import 'package:cally/data/db/database.dart';
 import 'package:cally/data/event_repository.dart';
@@ -7,6 +9,7 @@ import 'package:cally/data/models.dart';
 import 'package:cally/features/notifications/notification_plan.dart';
 
 void main() {
+  final t = lookupAppLocalizations(const Locale('en'));
   late AppDatabase db;
   late EventRepository repo;
   final now = DateTime(2026, 11, 10, 8, 0); // fixed "now"
@@ -26,7 +29,7 @@ void main() {
       start: DateTime(2026, 11, 10, 11), end: DateTime(2026, 11, 10, 12),
       alertMinutes: 30,
     ));
-    final plan = planNotifications(events: await rows(), settings: const AppSettings(), now: now);
+    final plan = planNotifications(events: await rows(), settings: const AppSettings(), now: now, t: t);
     expect(plan.length, 1);
     expect(plan.first.title, 'Dentist');
     expect(plan.first.when, DateTime(2026, 11, 10, 10, 30));
@@ -39,11 +42,11 @@ void main() {
       calendarId: 'c', title: 'Meeting',
       start: DateTime(2026, 11, 10, 15), end: DateTime(2026, 11, 10, 16),
     ));
-    expect(planNotifications(events: await rows(), settings: const AppSettings(), now: now), isEmpty);
+    expect(planNotifications(events: await rows(), settings: const AppSettings(), now: now, t: t), isEmpty);
     final withDefault = planNotifications(
         events: await rows(),
         settings: const AppSettings(defaultAlertTimed: 10),
-        now: now);
+        now: now, t: t);
     expect(withDefault.length, 1);
     expect(withDefault.first.when, DateTime(2026, 11, 10, 14, 50));
   });
@@ -56,7 +59,7 @@ void main() {
       alertMinutes: 0, recurrence: const Recurrence(freq: Freq.daily),
     ));
     final plan = planNotifications(
-        events: await rows(), settings: const AppSettings(), now: now, horizonDays: 5);
+        events: await rows(), settings: const AppSettings(), now: now, t: t, horizonDays: 5);
     expect(plan.length, 5);
     expect(plan.every((p) => p.title == 'Standup'), true);
   });
@@ -72,7 +75,7 @@ void main() {
     final plan = planNotifications(
       events: await rows(),
       settings: const AppSettings(digestMorningOn: true, digestMorningMin: 9 * 60),
-      now: now, horizonDays: 1,
+      now: now, t: t, horizonDays: 1,
     );
     final digest = plan.where((p) => p.title == 'Today');
     expect(digest.length, 1);

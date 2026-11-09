@@ -1,3 +1,4 @@
+import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -52,6 +53,7 @@ class _SearchSheetState extends ConsumerState<SearchSheet> {
     final rows = ref.watch(eventRowsProvider).value ?? const [];
     final cals = ref.watch(calendarsProvider).value ?? const <Calendar>[];
     final use24h = ref.watch(use24hProvider);
+    final t = AppLocalizations.of(context);
     final results = _results(rows);
 
     return CupertinoPageScaffold(
@@ -63,9 +65,9 @@ class _SearchSheetState extends ConsumerState<SearchSheet> {
               padding: const EdgeInsets.fromLTRB(Tokens.gutter, 12, 8, 4),
               child: Row(
                 children: [
-                  const Expanded(
-                    child: Text('Search',
-                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700)),
+                  Expanded(
+                    child: Text(t.search,
+                        style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w700)),
                   ),
                   CupertinoButton(
                     padding: EdgeInsets.zero,
@@ -79,7 +81,7 @@ class _SearchSheetState extends ConsumerState<SearchSheet> {
               padding: const EdgeInsets.symmetric(horizontal: Tokens.gutter),
               child: CupertinoSearchTextField(
                 autofocus: true,
-                placeholder: 'Event name, location and notes',
+                placeholder: t.searchPlaceholder,
                 onChanged: (v) => setState(() => _query = v),
               ),
             ),
@@ -90,7 +92,7 @@ class _SearchSheetState extends ConsumerState<SearchSheet> {
                 padding: const EdgeInsets.symmetric(horizontal: Tokens.gutter, vertical: 8),
                 children: [
                   _FilterChip(
-                    label: 'All',
+                    label: t.searchAll,
                     selected: _calendarFilter == null,
                     color: null,
                     onTap: () => setState(() => _calendarFilter = null),
@@ -110,7 +112,7 @@ class _SearchSheetState extends ConsumerState<SearchSheet> {
                   ? const SizedBox.shrink()
                   : results.isEmpty
                       ? Center(
-                          child: Text('No matches',
+                          child: Text(t.noMatches,
                               style: TextStyle(
                                   color: CupertinoColors.secondaryLabel.resolveFrom(context))))
                       : ListView.separated(

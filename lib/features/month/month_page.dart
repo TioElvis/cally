@@ -1,3 +1,4 @@
+import '../../l10n/app_localizations.dart';
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
@@ -174,12 +175,12 @@ class _Header extends StatelessWidget {
           if (showToday) _TodayPill(onPressed: onToday),
           _HeaderIcon(
             icon: CupertinoIcons.search,
-            semanticLabel: 'Search',
+            semanticLabel: AppLocalizations.of(context).search,
             onPressed: () => showSearch(context),
           ),
           _HeaderIcon(
             icon: CupertinoIcons.gear,
-            semanticLabel: 'Settings',
+            semanticLabel: AppLocalizations.of(context).settings,
             onPressed: () => Navigator.of(context)
                 .push(CupertinoPageRoute(builder: (_) => const SettingsPage())),
           ),
@@ -220,7 +221,7 @@ class _TodayPill extends StatelessWidget {
       onPressed: onPressed,
       child: Semantics(
         button: true,
-        label: 'Go to today',
+        label: AppLocalizations.of(context).goToToday,
         child: Container(
           height: 30,
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -233,7 +234,7 @@ class _TodayPill extends StatelessWidget {
             children: [
               Icon(CupertinoIcons.arrow_uturn_left, size: 14, color: brand),
               const SizedBox(width: 5),
-              Text('TODAY',
+              Text(AppLocalizations.of(context).today.toUpperCase(),
                   style: AppText.weekday(context, color: brand).copyWith(fontSize: 12)),
             ],
           ),
@@ -290,6 +291,7 @@ class _DayAgenda extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final events = ref.watch(dayOccurrencesProvider(day));
     final heading = DateFormat('EEE d MMM y').format(day);
+    final t = AppLocalizations.of(context);
 
     Future<void> openEditor(DayOccurrence occ) async {
       final rows = ref.read(eventRowsProvider).value ?? const [];
@@ -307,25 +309,26 @@ class _DayAgenda extends ConsumerWidget {
       final use24h = ref.read(use24hProvider);
       final share = ref.read(shareServiceProvider);
       HapticFeedback.selectionClick();
+      final t = AppLocalizations.of(context);
       final action = await showCupertinoModalPopup<String>(
         context: context,
         builder: (c) => CupertinoActionSheet(
           title: Text(occ.title),
           actions: [
             CupertinoActionSheetAction(
-                onPressed: () => Navigator.pop(c, 'text'), child: const Text('Share as text')),
+                onPressed: () => Navigator.pop(c, 'text'), child: Text(t.shareAsText)),
             CupertinoActionSheetAction(
                 onPressed: () => Navigator.pop(c, 'ics'),
-                child: const Text('Share as calendar file (.ics)')),
+                child: Text(t.shareAsIcs)),
             CupertinoActionSheetAction(
-                onPressed: () => Navigator.pop(c, 'edit'), child: const Text('Edit')),
+                onPressed: () => Navigator.pop(c, 'edit'), child: Text(t.edit)),
             CupertinoActionSheetAction(
                 isDestructiveAction: true,
                 onPressed: () => Navigator.pop(c, 'delete'),
-                child: const Text('Delete')),
+                child: Text(t.delete)),
           ],
           cancelButton: CupertinoActionSheetAction(
-              onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+              onPressed: () => Navigator.pop(c), child: Text(t.cancel)),
         ),
       );
       switch (action) {
@@ -363,7 +366,7 @@ class _DayAgenda extends ConsumerWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(Tokens.gutter, 8, Tokens.gutter, 8),
-                child: Text('No events', style: AppText.secondary(context)),
+                child: Text(t.noEvents, style: AppText.secondary(context)),
               ),
             )
           else
@@ -401,7 +404,7 @@ class _AgendaRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final bar = EventColors.base(event.colorId);
     final time = event.allDay
-        ? 'All-day'
+        ? AppLocalizations.of(context).allDay
         : '${fmtTime(event.start, use24h)} – ${fmtTime(event.end, use24h)}';
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -466,7 +469,7 @@ class _NewEventButton extends ConsumerWidget {
             Icon(CupertinoIcons.add,
                 size: 18, color: CupertinoColors.label.resolveFrom(context)),
             const SizedBox(width: 6),
-            Text('New event', style: AppText.pill(context)),
+            Text(AppLocalizations.of(context).newEvent, style: AppText.pill(context)),
           ],
         ),
       ),

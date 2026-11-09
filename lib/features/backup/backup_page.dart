@@ -1,3 +1,4 @@
+import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,18 +30,17 @@ class _BackupPageState extends ConsumerState<BackupPage> {
     final json = await ref.read(backupRepositoryProvider).exportJson();
     await Clipboard.setData(ClipboardData(text: json));
     if (!mounted) return;
+    final t = AppLocalizations.of(context);
     showCupertinoDialog<void>(
       context: context,
       builder: (c) => CupertinoAlertDialog(
-        title: const Text('Backup copied'),
-        content: Text(
-            'Your data (${json.length} chars) is on the clipboard. Paste it '
-            'somewhere safe, or into "Restore" on another device.'),
+        title: Text(t.backupCopied),
+        content: Text(t.backupCopiedMsg(json.length)),
         actions: [
           CupertinoDialogAction(
               isDefaultAction: true,
               onPressed: () => Navigator.pop(c),
-              child: const Text('OK')),
+              child: Text(t.ok)),
         ],
       ),
     );
@@ -49,18 +49,19 @@ class _BackupPageState extends ConsumerState<BackupPage> {
   Future<void> _restore() async {
     final text = _import.text.trim();
     if (text.isEmpty) return;
+    final t = AppLocalizations.of(context);
     final ok = await showCupertinoDialog<bool>(
       context: context,
       builder: (c) => CupertinoAlertDialog(
-        title: const Text('Restore backup?'),
-        content: const Text('This replaces all current calendars and events.'),
+        title: Text(t.restoreBackupQ),
+        content: Text(t.restoreReplaceWarning),
         actions: [
           CupertinoDialogAction(
-              onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+              onPressed: () => Navigator.pop(c, false), child: Text(t.cancel)),
           CupertinoDialogAction(
               isDestructiveAction: true,
               onPressed: () => Navigator.pop(c, true),
-              child: const Text('Restore')),
+              child: Text(t.restore)),
         ],
       ),
     );
@@ -71,20 +72,20 @@ class _BackupPageState extends ConsumerState<BackupPage> {
     } on BackupFormatException catch (e) {
       error = e.message;
     } catch (_) {
-      error = 'Could not restore this backup.';
+      error = t.restoreFailed;
     }
     if (!mounted) return;
     _import.clear();
     showCupertinoDialog<void>(
       context: context,
       builder: (c) => CupertinoAlertDialog(
-        title: Text(error == null ? 'Restored' : 'Restore failed'),
-        content: Text(error ?? 'Your data was restored from the backup.'),
+        title: Text(error == null ? t.restored : t.restoreFailed),
+        content: Text(error ?? t.restoredMsg),
         actions: [
           CupertinoDialogAction(
               isDefaultAction: true,
               onPressed: () => Navigator.pop(c),
-              child: const Text('OK')),
+              child: Text(t.ok)),
         ],
       ),
     );
@@ -92,20 +93,19 @@ class _BackupPageState extends ConsumerState<BackupPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return CupertinoPageScaffold(
       backgroundColor: CupertinoColors.systemGroupedBackground.resolveFrom(context),
-      navigationBar: const CupertinoNavigationBar(middle: Text('Backup & restore')),
+      navigationBar: CupertinoNavigationBar(middle: Text(t.backupRestore)),
       child: SafeArea(
         child: ListView(
           children: [
             CupertinoListSection.insetGrouped(
-              header: const Text('Backup'),
-              footer: const Text(
-                  'Copies all your calendars, events and settings as JSON to the '
-                  'clipboard. Keep it safe or paste it into Restore on another device.'),
+              header: Text(t.backup),
+              footer: Text(t.backupFooter),
               children: [
                 CupertinoListTile(
-                  title: const Text('Export to clipboard'),
+                  title: Text(t.exportToClipboard),
                   leading: const Icon(CupertinoIcons.square_arrow_up),
                   trailing: const CupertinoListTileChevron(),
                   onTap: _export,
@@ -113,22 +113,21 @@ class _BackupPageState extends ConsumerState<BackupPage> {
               ],
             ),
             CupertinoListSection.insetGrouped(
-              header: const Text('Restore'),
-              footer: const Text('Paste a Cally backup and restore it. '
-                  'This replaces everything currently in the app.'),
+              header: Text(t.restoreTitle),
+              footer: Text(t.restoreFooter),
               children: [
                 Padding(
                   padding: const EdgeInsets.all(12),
                   child: CupertinoTextField(
                     controller: _import,
-                    placeholder: 'Paste backup JSON here',
+                    placeholder: t.pasteBackupHere,
                     maxLines: 6,
                     minLines: 4,
                     style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
                   ),
                 ),
                 CupertinoListTile(
-                  title: const Text('Restore from pasted backup'),
+                  title: Text(t.restoreFromPasted),
                   leading: const Icon(CupertinoIcons.square_arrow_down),
                   onTap: _restore,
                 ),

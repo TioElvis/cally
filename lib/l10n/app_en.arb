@@ -1,0 +1,146 @@
+{
+  "@@locale": "en",
+  "appName": "Cally",
+  "cancel": "Cancel",
+  "ok": "OK",
+  "save": "Save",
+  "delete": "Delete",
+  "edit": "Edit",
+  "restore": "Restore",
+  "today": "Today",
+  "newEvent": "New event",
+  "noEvents": "No events",
+  "allDay": "All-day",
+  "eventName": "Event name",
+  "starts": "Starts",
+  "ends": "Ends",
+  "calendar": "Calendar",
+  "color": "Color",
+  "repeat": "Repeat",
+  "alert": "Alert",
+  "notes": "Notes",
+  "deleteEvent": "Delete event",
+  "deleteEventQ": "Delete event?",
+  "deleteSeriesNote": "This deletes the whole repeating series.",
+  "repeatNever": "Doesn't repeat",
+  "repeatDaily": "Daily",
+  "repeatWeekly": "Weekly",
+  "repeatMonthly": "Monthly",
+  "repeatYearly": "Yearly",
+  "alertNone": "None",
+  "atTimeOfEvent": "At time of event",
+  "minutesBefore": "{count, plural, =1{1 minute before} other{{count} minutes before}}",
+  "@minutesBefore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursBefore": "{count, plural, =1{1 hour before} other{{count} hours before}}",
+  "@hoursBefore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "appearance": "Appearance",
+  "theme": "Theme",
+  "system": "System",
+  "light": "Light",
+  "dark": "Dark",
+  "firstDayOfWeek": "First day of week",
+  "use24h": "24-hour time",
+  "weekNumbers": "Week numbers",
+  "accentColor": "Accent color",
+  "notifications": "Notifications",
+  "enableNotifications": "Enable notifications",
+  "defaultAlert": "Default alert",
+  "defaultAlertAllDay": "Default alert (all-day)",
+  "morningDigest": "Morning digest",
+  "eveningDigest": "Evening digest (tomorrow)",
+  "appIconBadge": "App icon badge",
+  "badgeNone": "None",
+  "badgeDate": "Date",
+  "badgeCount": "Count",
+  "notificationsEnabled": "Notifications enabled",
+  "notificationsOff": "Notifications off",
+  "notificationsOnMsg": "Cally can now remind you about events.",
+  "notificationsOffMsg": "Allow notifications in system settings to get alerts.",
+  "settings": "Settings",
+  "calendars": "Calendars",
+  "manageCalendars": "Manage calendars",
+  "newCalendar": "New calendar",
+  "editCalendar": "Edit calendar",
+  "calendarName": "Calendar name",
+  "renameRecolour": "Rename / recolour",
+  "makeDefault": "Make default",
+  "moveUp": "Move up",
+  "moveDown": "Move down",
+  "defaultLabel": "Default",
+  "deleteCalendarQ": "Delete \"{title}\"?",
+  "@deleteCalendarQ": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarEventsDeleted": "Its events are deleted too.",
+  "calendarsHint": "Tap a calendar to rename, recolour, reorder, set default or delete. The switch hides it from the grid.",
+  "data": "Data",
+  "backupRestore": "Backup & restore",
+  "backup": "Backup",
+  "restoreTitle": "Restore",
+  "exportToClipboard": "Export to clipboard",
+  "backupCopied": "Backup copied",
+  "backupCopiedMsg": "Your data ({count} chars) is on the clipboard. Paste it somewhere safe, or into Restore on another device.",
+  "@backupCopiedMsg": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupFooter": "Copies all your calendars, events and settings as JSON to the clipboard. Keep it safe or paste it into Restore on another device.",
+  "restoreFooter": "Paste a Cally backup and restore it. This replaces everything currently in the app.",
+  "pasteBackupHere": "Paste backup JSON here",
+  "restoreFromPasted": "Restore from pasted backup",
+  "restoreBackupQ": "Restore backup?",
+  "restoreReplaceWarning": "This replaces all current calendars and events.",
+  "restored": "Restored",
+  "restoredMsg": "Your data was restored from the backup.",
+  "restoreFailed": "Restore failed",
+  "restoreEvents": "Restore events",
+  "nothingToRestore": "Nothing to restore",
+  "restoreAll": "Restore all",
+  "deleteAllPermanently": "Delete all permanently",
+  "about": "About",
+  "localFree": "Local · free",
+  "shareAsText": "Share as text",
+  "shareAsIcs": "Share as calendar file (.ics)",
+  "search": "Search",
+  "searchPlaceholder": "Event name, location and notes",
+  "searchAll": "All",
+  "noMatches": "No matches",
+  "goToToday": "Go to today",
+  "done": "Done",
+  "tomorrow": "Tomorrow",
+  "eventsToday": "{count, plural, =1{1 event today} other{{count} events today}}",
+  "eventsTomorrow": "{count, plural, =1{1 event tomorrow} other{{count} events tomorrow}}",
+  "@eventsToday": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@eventsTomorrow": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

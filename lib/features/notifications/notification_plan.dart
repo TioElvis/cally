@@ -1,6 +1,7 @@
 import '../../core/time/recurrence.dart';
 import '../../data/db/database.dart';
 import '../../data/models.dart';
+import '../../l10n/app_localizations.dart';
 
 /// A notification to schedule. [key] is a stable string; adapters hash it to the
 /// integer id the platform wants.
@@ -20,14 +21,10 @@ class PlannedNotification {
   String toString() => 'PN($key @ $when: $title / $body)';
 }
 
-String _timeWord(int minutes, bool allDay) {
-  if (allDay) return minutes == 0 ? 'Today' : 'Reminder';
-  if (minutes == 0) return 'Now';
-  if (minutes % 60 == 0) {
-    final h = minutes ~/ 60;
-    return '$h hour${h == 1 ? '' : 's'} before';
-  }
-  return '$minutes minutes before';
+String _alertBody(AppLocalizations t, int minutes) {
+  if (minutes == 0) return t.atTimeOfEvent;
+  if (minutes % 60 == 0) return t.hoursBefore(minutes ~/ 60);
+  return t.minutesBefore(minutes);
 }
 
 int countOnDay(List<EventRow> events, DateTime day) {
@@ -46,6 +43,7 @@ List<PlannedNotification> planNotifications({
   required List<EventRow> events,
   required AppSettings settings,
   required DateTime now,
+  required AppLocalizations t,
   int horizonDays = 30,
   int maxCount = 60,
 }) {
@@ -64,7 +62,7 @@ List<PlannedNotification> planNotifications({
           key: 'alert:${e.id}:${occ.start.millisecondsSinceEpoch}',
           when: fireAt,
           title: e.title,
-          body: _timeWord(minutes, e.allDay),
+          body: _alertBody(t, minutes),
         ));
       }
     }
@@ -81,8 +79,8 @@ List<PlannedNotification> planNotifications({
         out.add(PlannedNotification(
           key: 'digest:am:${d.millisecondsSinceEpoch}',
           when: fire,
-          title: 'Today',
-          body: '$n event${n == 1 ? '' : 's'} today',
+          title: t.today,
+          body: t.eventsToday(n),
         ));
       }
     }
@@ -94,8 +92,8 @@ List<PlannedNotification> planNotifications({
         out.add(PlannedNotification(
           key: 'digest:pm:${d.millisecondsSinceEpoch}',
           when: fire,
-          title: 'Tomorrow',
-          body: '$n event${n == 1 ? '' : 's'} tomorrow',
+          title: t.tomorrow,
+          body: t.eventsTomorrow(n),
         ));
       }
     }

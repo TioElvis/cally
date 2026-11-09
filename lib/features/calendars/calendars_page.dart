@@ -1,3 +1,4 @@
+import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,13 +13,14 @@ class CalendarsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = AppLocalizations.of(context);
     final cals = ref.watch(calendarsProvider).value ?? const <Calendar>[];
     final repo = ref.read(repositoryProvider);
 
     return CupertinoPageScaffold(
       backgroundColor: CupertinoColors.systemGroupedBackground.resolveFrom(context),
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('Calendars'),
+        middle: Text(t.calendars),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () => _editCalendar(context, ref, null),
@@ -41,7 +43,7 @@ class CalendarsPage extends ConsumerWidget {
                       ),
                     ),
                     title: Text(c.title),
-                    subtitle: c.isDefault ? const Text('Default') : null,
+                    subtitle: c.isDefault ? Text(t.defaultLabel) : null,
                     trailing: CupertinoSwitch(
                       value: c.isVisible,
                       onChanged: (v) => repo.setCalendarVisible(c.id, v),
@@ -53,8 +55,7 @@ class CalendarsPage extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: Tokens.gutter),
               child: Text(
-                'Tap a calendar to rename, recolour, reorder, set default or delete. '
-                'The switch hides it from the grid.',
+                t.calendarsHint,
                 style: TextStyle(
                     fontSize: 13, color: CupertinoColors.secondaryLabel.resolveFrom(context)),
               ),
@@ -67,6 +68,7 @@ class CalendarsPage extends ConsumerWidget {
 
   Future<void> _calendarActions(
       BuildContext context, WidgetRef ref, List<Calendar> cals, Calendar cal) async {
+    final t = AppLocalizations.of(context);
     final repo = ref.read(repositoryProvider);
     final index = cals.indexWhere((c) => c.id == cal.id);
     final action = await showCupertinoModalPopup<String>(
@@ -76,24 +78,24 @@ class CalendarsPage extends ConsumerWidget {
         actions: [
           CupertinoActionSheetAction(
               onPressed: () => Navigator.pop(c, 'edit'),
-              child: const Text('Rename / recolour')),
+              child: Text(t.renameRecolour)),
           if (!cal.isDefault)
             CupertinoActionSheetAction(
                 onPressed: () => Navigator.pop(c, 'default'),
-                child: const Text('Make default')),
+                child: Text(t.makeDefault)),
           if (index > 0)
             CupertinoActionSheetAction(
-                onPressed: () => Navigator.pop(c, 'up'), child: const Text('Move up')),
+                onPressed: () => Navigator.pop(c, 'up'), child: Text(t.moveUp)),
           if (index < cals.length - 1)
             CupertinoActionSheetAction(
-                onPressed: () => Navigator.pop(c, 'down'), child: const Text('Move down')),
+                onPressed: () => Navigator.pop(c, 'down'), child: Text(t.moveDown)),
           CupertinoActionSheetAction(
               isDestructiveAction: true,
               onPressed: () => Navigator.pop(c, 'delete'),
-              child: const Text('Delete')),
+              child: Text(t.delete)),
         ],
         cancelButton: CupertinoActionSheetAction(
-            onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(c), child: Text(t.cancel)),
       ),
     );
     switch (action) {
@@ -126,18 +128,19 @@ class CalendarsPage extends ConsumerWidget {
   }
 
   Future<bool> _confirmDelete(BuildContext context, String title) async {
+    final t = AppLocalizations.of(context);
     final ok = await showCupertinoDialog<bool>(
       context: context,
       builder: (c) => CupertinoAlertDialog(
-        title: Text('Delete "$title"?'),
-        content: const Text('Its events are deleted too.'),
+        title: Text(t.deleteCalendarQ(title)),
+        content: Text(t.calendarEventsDeleted),
         actions: [
           CupertinoDialogAction(
-              onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+              onPressed: () => Navigator.pop(c, false), child: Text(t.cancel)),
           CupertinoDialogAction(
               isDestructiveAction: true,
               onPressed: () => Navigator.pop(c, true),
-              child: const Text('Delete')),
+              child: Text(t.delete)),
         ],
       ),
     );
@@ -172,6 +175,7 @@ class _CalendarEditorState extends ConsumerState<_CalendarEditor> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final h = MediaQuery.sizeOf(context).height;
     return Padding(
       padding: EdgeInsets.only(top: h * 0.3),
@@ -182,8 +186,8 @@ class _CalendarEditorState extends ConsumerState<_CalendarEditor> {
             leading: CupertinoButton(
                 padding: EdgeInsets.zero,
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel')),
-            middle: Text(widget.cal == null ? 'New calendar' : 'Edit calendar'),
+                child: Text(t.cancel)),
+            middle: Text(widget.cal == null ? t.newCalendar : t.editCalendar),
             trailing: CupertinoButton(
               padding: EdgeInsets.zero,
               onPressed: () async {
@@ -191,7 +195,7 @@ class _CalendarEditorState extends ConsumerState<_CalendarEditor> {
                     id: widget.cal?.id, title: _name.text, colorId: _colorId);
                 if (context.mounted) Navigator.pop(context);
               },
-              child: const Text('Save', style: TextStyle(fontWeight: FontWeight.w600)),
+              child: Text(t.save, style: const TextStyle(fontWeight: FontWeight.w600)),
             ),
           ),
           child: SafeArea(
@@ -201,7 +205,7 @@ class _CalendarEditorState extends ConsumerState<_CalendarEditor> {
                 CupertinoTextField(
                   controller: _name,
                   autofocus: widget.cal == null,
-                  placeholder: 'Calendar name',
+                  placeholder: t.calendarName,
                   padding: const EdgeInsets.all(14),
                 ),
                 const SizedBox(height: 20),

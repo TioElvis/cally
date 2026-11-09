@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/theme/tokens.dart';
 import 'data/models.dart';
 import 'features/month/month_page.dart';
 import 'features/month/month_providers.dart';
+import 'l10n/app_localizations.dart';
 
 void main() {
   runApp(const ProviderScope(child: CalApp()));
@@ -27,6 +29,23 @@ class CalApp extends ConsumerWidget {
       title: 'Cally',
       debugShowCheckedModeBanner: false,
       theme: buildCupertinoTheme(brightness, accent),
+      // Follow the phone's language automatically (falls back to English).
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localeResolutionCallback: (device, supported) {
+        var chosen = const Locale('en');
+        if (device != null) {
+          for (final s in supported) {
+            if (s.languageCode == device.languageCode) {
+              chosen = s;
+              break;
+            }
+          }
+        }
+        // Keep intl's date formatting (month/weekday names) in the same language.
+        Intl.defaultLocale = chosen.languageCode;
+        return chosen;
+      },
       home: const MonthPage(),
     );
   }

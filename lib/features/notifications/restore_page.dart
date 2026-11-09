@@ -1,3 +1,4 @@
+import '../../l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,11 +15,12 @@ class RestorePage extends ConsumerWidget {
     final deleted = ref.watch(deletedEventsProvider).value ?? const [];
     final repo = ref.read(repositoryProvider);
     final use24h = ref.watch(use24hProvider);
+    final t = AppLocalizations.of(context);
 
     return CupertinoPageScaffold(
       backgroundColor: CupertinoColors.systemGroupedBackground.resolveFrom(context),
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('Restore events'),
+        middle: Text(t.restoreEvents),
         trailing: deleted.isEmpty
             ? null
             : CupertinoButton(
@@ -30,7 +32,7 @@ class RestorePage extends ConsumerWidget {
       child: SafeArea(
         child: deleted.isEmpty
             ? Center(
-                child: Text('Nothing to restore',
+                child: Text(t.nothingToRestore,
                     style: TextStyle(color: CupertinoColors.secondaryLabel.resolveFrom(context))),
               )
             : ListView(
@@ -45,7 +47,7 @@ class RestorePage extends ConsumerWidget {
                           trailing: CupertinoButton(
                             padding: EdgeInsets.zero,
                             onPressed: () => repo.restore(d.id),
-                            child: const Text('Restore'),
+                            child: Text(t.restore),
                           ),
                         ),
                     ],
@@ -57,19 +59,20 @@ class RestorePage extends ConsumerWidget {
   }
 
   Future<void> _menu(BuildContext context, repo) async {
+    final t = AppLocalizations.of(context);
     final action = await showCupertinoModalPopup<String>(
       context: context,
       builder: (c) => CupertinoActionSheet(
         actions: [
           CupertinoActionSheetAction(
-              onPressed: () => Navigator.pop(c, 'all'), child: const Text('Restore all')),
+              onPressed: () => Navigator.pop(c, 'all'), child: Text(t.restoreAll)),
           CupertinoActionSheetAction(
               isDestructiveAction: true,
               onPressed: () => Navigator.pop(c, 'clear'),
-              child: const Text('Delete all permanently')),
+              child: Text(t.deleteAllPermanently)),
         ],
         cancelButton: CupertinoActionSheetAction(
-            onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(c), child: Text(t.cancel)),
       ),
     );
     if (action == 'all') await repo.restoreAll();
