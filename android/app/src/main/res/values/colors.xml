@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Widget foreground in light mode; -night overrides it. Referenced from
+         the widget layout so the launcher swaps it the moment the phone (or the
+         app's System theme) flips, with no re-add. -->
+    <color name="widget_fg">#1A1A1A</color>
+</resources>

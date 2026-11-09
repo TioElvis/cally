@@ -105,13 +105,14 @@ struct Chip: View {
     let label: Lbl
     var body: some View {
         Text(label.t)
-            .font(.system(size: 8, weight: .medium))
+            .font(.system(size: 10, weight: .medium))
             .lineLimit(1)
             .truncationMode(.tail)
+            .multilineTextAlignment(.center)
             .foregroundColor(colorFor(label.c))
             .padding(.horizontal, 3)
-            .padding(.vertical, 0.5)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 1)
+            .frame(maxWidth: .infinity, alignment: .center)
             .background(RoundedRectangle(cornerRadius: 3).fill(colorFor(label.c).opacity(0.22)))
     }
 }
@@ -120,11 +121,11 @@ struct Chip: View {
 struct CellView: View {
     let cell: Cell
     var body: some View {
-        VStack(alignment: .leading, spacing: 1) {
+        VStack(alignment: .center, spacing: 1) {
             Text("\(cell.d)")
-                .font(.system(size: 10, weight: cell.today ? .bold : .regular))
+                .font(.system(size: 13, weight: cell.today ? .bold : .regular))
                 .foregroundColor(cell.out ? .secondary.opacity(0.4) : (cell.today ? .white : .primary))
-                .frame(width: 15, height: 15)
+                .frame(width: 20, height: 20)
                 .background(cell.today ? Color.accentColor : .clear)
                 .clipShape(Circle())
             ForEach(Array(cell.labels.prefix(3).enumerated()), id: \.offset) { _, l in
@@ -132,13 +133,12 @@ struct CellView: View {
             }
             if cell.more > 0 {
                 Text("+\(cell.more)")
-                    .font(.system(size: 7, weight: .semibold))
+                    .font(.system(size: 9, weight: .semibold))
                     .foregroundColor(.secondary)
-                    .padding(.leading, 2)
             }
             Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, minHeight: 40, alignment: .topLeading)
+        .frame(maxWidth: .infinity, minHeight: 44, alignment: .top)
         .opacity(cell.out ? 0.5 : 1)
     }
 }
@@ -156,12 +156,15 @@ struct MonthGridView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(data.title).font(.caption).bold().foregroundColor(.primary)
+        VStack(alignment: .center, spacing: 4) {
+            Text(data.title)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(.primary)
+                .frame(maxWidth: .infinity, alignment: .center)
             HStack(spacing: 2) {
                 ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { _, s in
                     Text(s)
-                        .font(.system(size: 9, weight: .semibold))
+                        .font(.system(size: 11, weight: .semibold))
                         .foregroundColor(.secondary)
                         .frame(maxWidth: .infinity)
                 }

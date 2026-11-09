@@ -1,11 +1,8 @@
 package com.cally.cally
 
 import android.appwidget.AppWidgetManager
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.Configuration
 import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
@@ -16,9 +13,14 @@ import java.text.DateFormatSymbols
 
 /**
  * Cally Android home-screen widget: a minical-style month grid. Reads the data
- * the Flutter side wrote via home_widget (title / weekStart / grid) and fills a
- * 6x7 grid where each day shows small event-title chips with long titles
- * ellipsised. Layout and ids are generated in res/layout/cally_widget.xml.
+ * the Flutter side wrote via home_widget (title / weekStart / grid / themeMode)
+ * and fills a 6x7 grid where each day shows small event-title chips with long
+ * titles ellipsised. Layout and ids are generated in res/layout/cally_widget.xml.
+ *
+ * Theme: in "System" mode the widget relies on theme-qualified resources
+ * (@color/widget_fg and the background drawable both have -night variants), so
+ * the launcher re-tints it the instant the phone flips light/dark — no re-add.
+ * "Light"/"Dark" force explicit colours instead.
  */
 class CallyWidgetProvider : HomeWidgetProvider() {
 
@@ -35,20 +37,6 @@ class CallyWidgetProvider : HomeWidgetProvider() {
     )
 
     private fun colorFor(i: Int): Int = palette[((i % palette.size) + palette.size) % palette.size]
-
-    /** Repaint on a device light/dark switch so "system" theme stays in sync. */
-    override fun onReceive(context: Context, intent: Intent) {
-        super.onReceive(context, intent)
-        if (intent.action == Intent.ACTION_CONFIGURATION_CHANGED) {
-            val mgr = AppWidgetManager.getInstance(context)
-            val ids = mgr.getAppWidgetIds(ComponentName(context, CallyWidgetProvider::class.java))
-            if (ids.isNotEmpty()) {
-                val prefs = context.getSharedPreferences(
-                    "HomeWidgetPreferences", Context.MODE_PRIVATE)
-                onUpdate(context, mgr, ids, prefs)
-            }
-        }
-    }
 
     override fun onUpdate(
         context: Context,
@@ -69,22 +57,25 @@ class CallyWidgetProvider : HomeWidgetProvider() {
             JSONArray()
         }
 
-        // Match the app's theme (0 system follows the device, 1 light, 2 dark).
-        val dark = when (themeMode) {
-            1 -> false
-            2 -> true
-            else -> (res.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-                Configuration.UI_MODE_NIGHT_YES
+        // null = "System": leave the layout's theme-qualified resources alone so
+        // the launcher swaps them live; otherwise force the chosen colour.
+        val forcedFg: Int? = when (themeMode) {
+            1 -> 0xFF1A1A1A.toInt()
+            2 -> 0xFFFFFFFF.toInt()
+            else -> null
         }
-        val primary = if (dark) 0xFFFFFFFF.toInt() else 0xFF1A1A1A.toInt()
-        val faded = if (dark) 0x55FFFFFF else 0x55000000
-        val bgRes = if (dark) R.drawable.cally_widget_bg_dark else R.drawable.cally_widget_bg
+        val bgRes = when (themeMode) {
+            1 -> R.drawable.cally_widget_bg_light
+            2 -> R.drawable.cally_widget_bg_dark
+            else -> R.drawable.cally_widget_bg // has a -night variant
+        }
+        val outColor = 0x808B949E.toInt() // muted grey, readable on both themes
 
         appWidgetIds.forEach { widgetId ->
             val views = RemoteViews(pkg, R.layout.cally_widget)
             views.setInt(R.id.widget_root, "setBackgroundResource", bgRes)
             views.setTextViewText(R.id.widget_title, title)
-            views.setTextColor(R.id.widget_title, primary)
+            if (forcedFg != null) views.setTextColor(R.id.widget_title, forcedFg)
 
             // Weekday header, localised, ordered from the chosen week start.
             val letters = weekdayLetters(weekStart)
@@ -112,11 +103,12 @@ class CallyWidgetProvider : HomeWidgetProvider() {
                     }
                     out -> {
                         views.setInt(dayId, "setBackgroundResource", 0)
-                        views.setTextColor(dayId, faded)
+                        views.setTextColor(dayId, outColor)
                     }
                     else -> {
                         views.setInt(dayId, "setBackgroundResource", 0)
-                        views.setTextColor(dayId, primary)
+                        // System mode keeps @color/widget_fg from the layout.
+                        if (forcedFg != null) views.setTextColor(dayId, forcedFg)
                     }
                 }
 
