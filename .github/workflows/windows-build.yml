@@ -1,0 +1,24 @@
+name: Windows build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:   # lets you run it manually from the Actions tab
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter config --enable-windows-desktop
+      - run: flutter pub get
+      - run: flutter build windows --release
+      - name: Zip the build
+        run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath Cally-windows.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cally-windows
+          path: Cally-windows.zip
