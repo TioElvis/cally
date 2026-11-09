@@ -1,12 +1,11 @@
 package com.cally.cally
 
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
-import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
-import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 import org.json.JSONArray
 import java.text.DateFormatSymbols
@@ -136,9 +135,16 @@ class CallyWidgetProvider : HomeWidgetProvider() {
                 }
             }
 
-            val pending = HomeWidgetLaunchIntent.getActivity(
-                context, MainActivity::class.java, Uri.parse("cally://today"))
-            views.setOnClickPendingIntent(R.id.widget_root, pending)
+            // Open the app with the launcher's own intent (same as tapping the
+            // app icon, which never duplicates) rather than a custom widget
+            // intent that could start a second task — the "opens twice" bug.
+            val launch = context.packageManager.getLaunchIntentForPackage(pkg)
+            if (launch != null) {
+                val pending = PendingIntent.getActivity(
+                    context, 0, launch,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                views.setOnClickPendingIntent(R.id.widget_root, pending)
+            }
 
             appWidgetManager.updateAppWidget(widgetId, views)
         }
