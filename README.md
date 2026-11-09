@@ -8,7 +8,7 @@ See [`docs/PLAN.md`](docs/PLAN.md) for architecture and the roadmap, and
 [`docs/DESIGN.md`](docs/DESIGN.md) for the design system.
 
 ## Status
-**M7 — Cally Pro** (local): a one-time Pro entitlement with a paywall and a purchase port (local unlock for dev; real IAP deferred to M8). Pro gates **week numbers** in the month grid (ISO 8601), with locks on gated controls that open the paywall. No ads, no tracking. Built on M0–M6.
+**M8 — integrations** (device-pending): the notification timezone is wired (`flutter_timezone`), a real one-time-purchase IAP adapter (`in_app_purchase`) is committed behind the Pro port, and device-calendar import is scaffolded behind a port — currently blocked by the `device_calendar` plugin's Android Gradle incompatibility (see docs/INTEGRATIONS.md). Built on M0–M7.
 grid with today + selected-day highlighting, three-tone event chips, multi-day
 spans and a selected-day agenda. No external services yet (everything is local;
 device calendars, iCloud and purchases come in a later milestone).

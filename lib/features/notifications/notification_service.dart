@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -53,7 +54,15 @@ class LocalNotificationService implements NotificationService {
 
   Future<void> _init() async {
     if (_inited) return;
-    tzdata.initializeTimeZones(); // local defaults to UTC until set by flutter_timezone (TODO)
+    tzdata.initializeTimeZones();
+    // Set the device's timezone so zonedSchedule fires at the right local time
+    // (and stays correct across DST).
+    try {
+      final info = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(info.identifier));
+    } catch (_) {
+      // Fall back to UTC if the platform can't report a timezone.
+    }
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
     const darwin = DarwinInitializationSettings(
       requestAlertPermission: false,

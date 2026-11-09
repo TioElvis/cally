@@ -129,6 +129,22 @@ class EventRepository {
     }
   }
 
+  /// Create a calendar and return its generated id (used by device import).
+  Future<String> newCalendar(String title, int colorId) async {
+    final id = _uuid.v4();
+    final existing = await db.allCalendars();
+    final order = existing.isEmpty
+        ? 0
+        : existing.map((c) => c.displayOrder).reduce((a, b) => a > b ? a : b) + 1;
+    await db.upsertCalendar(CalendarsCompanion.insert(
+      id: id,
+      title: title.trim().isEmpty ? 'Imported' : title.trim(),
+      colorId: colorId,
+      displayOrder: Value(order),
+    ));
+    return id;
+  }
+
   /// Delete a calendar and its events.
   Future<void> deleteCalendar(String id) async {
     await db.deleteEventsForCalendar(id);
