@@ -8,7 +8,7 @@ See [`docs/PLAN.md`](docs/PLAN.md) for architecture and the roadmap, and
 [`docs/DESIGN.md`](docs/DESIGN.md) for the design system.
 
 ## Status
-**Current:** fully **local**, fully **free** (no Pro/ads/tracking), custom teal brand, shown as "Cally". Connecting to Apple/Google Calendar is deferred to the future (no API keys yet); the integration port is scaffolded for later. Built on M0–M8 (see docs/).
+**Current:** local, free, with a selectable **accent-colour palette** (8 colours) and a **clean first run** (default calendars, no sample events). Shown as "Cally". Apple/Google calendar connection deferred to the future. Built on M0–M8 (see docs/).
 grid with today + selected-day highlighting, three-tone event chips, multi-day
 spans and a selected-day agenda. No external services yet (everything is local;
 device calendars, iCloud and purchases come in a later milestone).

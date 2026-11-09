@@ -15,8 +15,8 @@ void main() {
   tearDown(() => db.close());
 
   test('ensureSeeded creates calendars and sample events, idempotently', () async {
-    await repo.ensureSeeded();
-    await repo.ensureSeeded(); // second call is a no-op
+    await repo.ensureSeeded(withSamples: true);
+    await repo.ensureSeeded(withSamples: true); // second call is a no-op
     final cals = await db.allCalendars();
     expect(cals.length, 2);
     expect(cals.any((c) => c.isDefault), true);
@@ -38,7 +38,7 @@ void main() {
   });
 
   test('a daily series expands across the whole week in the grid', () async {
-    await repo.ensureSeeded();
+    await repo.ensureSeeded(withSamples: true);
     final rows = await db.watchAllEvents().first;
     final color = {for (final c in await repo.watchCalendars().first) c.id: c.colorId};
     final standup = rows.firstWhere((r) => r.title == 'Standup');

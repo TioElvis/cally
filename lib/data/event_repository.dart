@@ -157,9 +157,10 @@ class EventRepository {
     }
   }
 
-  /// Create default calendars and a few sample events the first time the app
-  /// runs, so the month view isn't empty. Idempotent.
-  Future<void> ensureSeeded() async {
+  /// Create the default calendars on first run. Idempotent. Pass
+  /// [withSamples] (dev/tests only) to also seed a few example events; a real
+  /// build starts clean with no events.
+  Future<void> ensureSeeded({bool withSamples = false}) async {
     if (await db.calendarCount() > 0) return;
     await db.upsertCalendar(CalendarsCompanion.insert(
         id: 'personal', title: 'Personal', colorId: 0,
@@ -167,6 +168,8 @@ class EventRepository {
     await db.upsertCalendar(CalendarsCompanion.insert(
         id: 'work', title: 'Work', colorId: 3,
         displayOrder: const Value(1)));
+
+    if (!withSamples) return;
 
     final today = DateTime.now();
     DateTime at(int dayOffset, int h, [int m = 0]) =>

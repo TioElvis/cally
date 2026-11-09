@@ -36,7 +36,7 @@ void main() {
     tearDown(() => db.close());
 
     test('builds title, a 42-cell grid with today, upcoming and today count', () async {
-      await repo.ensureSeeded();
+      await repo.ensureSeeded(withSamples: true);
       final rows = await db.watchAllEvents().first;
       final cals = await repo.watchCalendars().first;
       final now = DateTime.now();

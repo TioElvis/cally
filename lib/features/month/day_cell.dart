@@ -31,7 +31,7 @@ class DayCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final numberColor = _numberColor(context);
     final highlight = isSelected
-        ? Tokens.brand.resolveFrom(context)
+        ? CupertinoTheme.of(context).primaryColor
         : isToday
             ? CupertinoColors.systemGrey6.resolveFrom(context)
             : null;

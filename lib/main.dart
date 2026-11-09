@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/theme/app_theme.dart';
+import 'core/theme/tokens.dart';
 import 'data/models.dart';
 import 'features/month/month_page.dart';
 import 'features/month/month_providers.dart';
@@ -16,6 +17,7 @@ class CalApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pref = ref.watch(themePrefProvider);
+    final accent = accentColor(ref.watch(accentProvider));
     final brightness = switch (pref) {
       ThemePref.system => null, // follow the platform
       ThemePref.light => Brightness.light,
@@ -24,7 +26,7 @@ class CalApp extends ConsumerWidget {
     return CupertinoApp(
       title: 'Cally',
       debugShowCheckedModeBanner: false,
-      theme: buildCupertinoTheme(brightness),
+      theme: buildCupertinoTheme(brightness, accent),
       home: const MonthPage(),
     );
   }

@@ -42,6 +42,9 @@ final use24hProvider = Provider<bool>((ref) => _settings(ref).use24h);
 /// Theme preference, from settings.
 final themePrefProvider = Provider<ThemePref>((ref) => _settings(ref).themeMode);
 
+/// Chosen accent palette index, from settings.
+final accentProvider = Provider<int>((ref) => _settings(ref).accentId);
+
 final calendarsProvider = StreamProvider<List<Calendar>>(
     (ref) => ref.watch(repositoryProvider).watchCalendars());
 

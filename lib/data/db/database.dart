@@ -38,6 +38,9 @@ class AppSettingsTable extends Table {
   BoolColumn get isPro => boolean().withDefault(const Constant(false))();
   BoolColumn get showWeekNumbers => boolean().withDefault(const Constant(false))();
 
+  // Accent colour index into kAccents.
+  IntColumn get accentId => integer().withDefault(const Constant(0))();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -101,7 +104,7 @@ class AppDatabase extends _$AppDatabase {
       : super(executor ?? driftDatabase(name: 'cally'));
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -124,6 +127,9 @@ class AppDatabase extends _$AppDatabase {
           if (from < 4) {
             await m.addColumn(appSettingsTable, appSettingsTable.isPro);
             await m.addColumn(appSettingsTable, appSettingsTable.showWeekNumbers);
+          }
+          if (from < 5) {
+            await m.addColumn(appSettingsTable, appSettingsTable.accentId);
           }
         },
       );

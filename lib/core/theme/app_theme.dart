@@ -6,10 +6,10 @@ import 'tokens.dart';
 /// light/dark forces it. Dynamic CupertinoColors resolve per brightness. Keeps
 /// the iOS system font (SF on iOS; the platform sans elsewhere — we never bundle
 /// SF Pro) and our brand accent.
-CupertinoThemeData buildCupertinoTheme([Brightness? brightness]) {
+CupertinoThemeData buildCupertinoTheme([Brightness? brightness, Color? accent]) {
   return CupertinoThemeData(
     brightness: brightness,
-    primaryColor: Tokens.brand,
+    primaryColor: accent ?? Tokens.brand,
     applyThemeToAll: true,
   );
 }

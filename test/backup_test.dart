@@ -22,7 +22,7 @@ void main() {
   tearDown(() => db.close());
 
   test('export then import reproduces calendars, events and settings', () async {
-    await repo.ensureSeeded();
+    await repo.ensureSeeded(withSamples: true);
     await repo.saveCalendar(title: 'Fitness', colorId: 2);
     await settings.setThemeMode(ThemePref.dark);
     await settings.setWeekStart(DateTime.sunday);

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../core/theme/tokens.dart';
 import '../../core/time/formats.dart';
 import '../../data/models.dart';
 import '../backup/backup_page.dart';
@@ -65,6 +66,7 @@ class SettingsPage extends ConsumerWidget {
                   title: const Text('24-hour time'),
                   trailing: CupertinoSwitch(value: settings.use24h, onChanged: repo.setUse24h),
                 ),
+                _AccentRow(selected: settings.accentId, onPick: repo.setAccent),
               ],
             ),
 
@@ -306,4 +308,51 @@ class SettingsPage extends ConsumerWidget {
 
   static String _hhmm(int minutesFromMidnight, bool use24h) =>
       fmtTime(DateTime(2000, 1, 1, minutesFromMidnight ~/ 60, minutesFromMidnight % 60), use24h);
+}
+
+class _AccentRow extends StatelessWidget {
+  final int selected;
+  final ValueChanged<int> onPick;
+  const _AccentRow({required this.selected, required this.onPick});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(bottom: 10),
+            child: Text('Accent color'),
+          ),
+          Wrap(
+            spacing: 14,
+            runSpacing: 12,
+            children: List.generate(kAccents.length, (i) {
+              final c = kAccents[i].color.resolveFrom(context);
+              final isSel = selected == i;
+              return GestureDetector(
+                onTap: () => onPick(i),
+                child: Container(
+                  width: 30,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: c,
+                    shape: BoxShape.circle,
+                    border: isSel
+                        ? Border.all(color: CupertinoColors.label.resolveFrom(context), width: 2.5)
+                        : null,
+                  ),
+                  child: isSel
+                      ? const Icon(CupertinoIcons.check_mark, size: 16, color: CupertinoColors.white)
+                      : null,
+                ),
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
 }

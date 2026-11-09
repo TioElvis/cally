@@ -30,7 +30,7 @@ void main() {
   });
 
   test('calendar create, default is exclusive, delete removes events', () async {
-    await repo.ensureSeeded();
+    await repo.ensureSeeded(withSamples: true);
     await repo.saveCalendar(title: 'Fitness', colorId: 2);
     var cals = await repo.watchCalendars().first;
     expect(cals.any((c) => c.title == 'Fitness'), true);
@@ -58,7 +58,7 @@ void main() {
   });
 
   test('search matches title/location/notes and filters by calendar', () async {
-    await repo.ensureSeeded();
+    await repo.ensureSeeded(withSamples: true);
     final rows = await db.watchAllEvents().first;
     expect(matchEvents(rows, query: '').isEmpty, true); // empty query → nothing
     expect(matchEvents(rows, query: 'standup').length, 1);

@@ -45,4 +45,7 @@ class SettingsRepository {
 
   Future<void> setShowWeekNumbers(bool v) => db.upsertSettings(
       AppSettingsTableCompanion(id: const Value('app'), showWeekNumbers: Value(v)));
+
+  Future<void> setAccent(int id) => db.upsertSettings(
+      AppSettingsTableCompanion(id: const Value('app'), accentId: Value(id)));
 }

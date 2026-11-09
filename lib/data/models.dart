@@ -50,6 +50,7 @@ class AppSettings {
   final BadgeType badgeType;
   final bool isPro;
   final bool showWeekNumbers;
+  final int accentId;
 
   const AppSettings({
     this.themeMode = ThemePref.system,
@@ -64,6 +65,7 @@ class AppSettings {
     this.badgeType = BadgeType.none,
     this.isPro = false,
     this.showWeekNumbers = false,
+    this.accentId = 0,
   });
 
   /// Week numbers are a free feature now (Cally is fully free).
@@ -84,6 +86,7 @@ class AppSettings {
           badgeType: BadgeType.values[r.badgeType.clamp(0, BadgeType.values.length - 1)],
           isPro: r.isPro,
           showWeekNumbers: r.showWeekNumbers,
+          accentId: r.accentId,
         );
 }
 

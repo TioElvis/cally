@@ -7,15 +7,18 @@ import 'package:flutter/cupertino.dart';
 class Tokens {
   Tokens._();
 
-  // Brand accent (Cally teal) — resolves per brightness. Our custom palette
-  // colour: used for the selected day, the Today pill and links.
+  // Default brand accent (teal). The user can pick another from [kAccents];
+  // the chosen one is applied as the Cupertino theme's primaryColor, so widgets
+  // read `CupertinoTheme.of(context).primaryColor`.
   static const brand = CupertinoDynamicColor.withBrightness(
-    color: Color(0xFF0D9488), // teal-600
-    darkColor: Color(0xFF2DD4BF), // teal-400
+    color: Color(0xFF0D9488),
+    darkColor: Color(0xFF2DD4BF),
   );
+  // Text/number drawn on top of the accent (white in light, near-black in dark),
+  // chosen to stay readable for every accent in [kAccents].
   static const onBrand = CupertinoDynamicColor.withBrightness(
     color: Color(0xFFFFFFFF),
-    darkColor: Color(0xFF07201D),
+    darkColor: Color(0xFF0A0A0A),
   );
 
   // Spacing
@@ -102,3 +105,33 @@ class ChipTones {
   final Color text;
   const ChipTones({required this.bar, required this.background, required this.text});
 }
+
+/// A selectable app accent (used for the selected day, Today pill and links).
+class Accent {
+  final String name;
+  final CupertinoDynamicColor color;
+  const Accent(this.name, this.color);
+}
+
+/// The accent palette the user can choose from. Index 0 (Teal) is the default.
+const kAccents = <Accent>[
+  Accent('Teal', CupertinoDynamicColor.withBrightness(
+      color: Color(0xFF0D9488), darkColor: Color(0xFF2DD4BF))),
+  Accent('Indigo', CupertinoDynamicColor.withBrightness(
+      color: Color(0xFF5B6CF0), darkColor: Color(0xFF8B97FF))),
+  Accent('Blue', CupertinoDynamicColor.withBrightness(
+      color: Color(0xFF2563EB), darkColor: Color(0xFF60A5FA))),
+  Accent('Purple', CupertinoDynamicColor.withBrightness(
+      color: Color(0xFF7C3AED), darkColor: Color(0xFFA78BFA))),
+  Accent('Pink', CupertinoDynamicColor.withBrightness(
+      color: Color(0xFFDB2777), darkColor: Color(0xFFF472B6))),
+  Accent('Orange', CupertinoDynamicColor.withBrightness(
+      color: Color(0xFFEA580C), darkColor: Color(0xFFFB923C))),
+  Accent('Green', CupertinoDynamicColor.withBrightness(
+      color: Color(0xFF059669), darkColor: Color(0xFF34D399))),
+  Accent('Graphite', CupertinoDynamicColor.withBrightness(
+      color: Color(0xFF334155), darkColor: Color(0xFF94A3B8))),
+];
+
+CupertinoDynamicColor accentColor(int id) =>
+    kAccents[id < 0 || id >= kAccents.length ? 0 : id].color;

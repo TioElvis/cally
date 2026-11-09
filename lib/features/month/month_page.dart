@@ -213,7 +213,7 @@ class _TodayPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brand = Tokens.brand.resolveFrom(context);
+    final brand = CupertinoTheme.of(context).primaryColor;
     return CupertinoButton(
       padding: EdgeInsets.zero,
       minimumSize: const Size.square(Tokens.minTap),
