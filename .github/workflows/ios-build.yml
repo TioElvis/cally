@@ -1,0 +1,36 @@
+name: iOS build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:   # lets you run it manually from the Actions tab
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter pub get
+
+      # Build the app WITHOUT code signing. This needs no Apple account and no
+      # secrets (same zero-setup idea as the Windows build), but the result is
+      # an UNSIGNED .ipa: it must be sideloaded with a free Apple ID using
+      # AltStore or Sideloadly. See docs/BUILD-IOS.md.
+      - run: flutter build ios --release --no-codesign
+
+      - name: Package an unsigned .ipa
+        run: |
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          cp -R Runner.app Payload/Runner.app
+          zip -r Cally-ios-unsigned.ipa Payload >/dev/null
+          cd -
+          mv build/ios/iphoneos/Cally-ios-unsigned.ipa .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cally-ios-unsigned
+          path: Cally-ios-unsigned.ipa

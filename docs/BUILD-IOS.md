@@ -70,9 +70,50 @@ flutter run -d <ios-device>          # debug on a device
 flutter build ipa                    # release archive
 ```
 
-## CI (optional)
+## CI build (GitHub Actions) — how a friend installs it
 
-A macOS CI job (Codemagic or GitHub Actions `runs-on: macos-latest`) can:
-`flutter pub get` → `pod install` → add the App Group + extension via an Xcode
-project step or a committed `.xcconfig` → `flutter build ipa --export-options`.
-Keep signing certs and the App Store API key in the CI secret store (never in git).
+`.github/workflows/ios-build.yml` runs on a free macOS runner and, on every push
+to `main` (or manually from the **Actions** tab → **iOS build** → **Run
+workflow**), produces a downloadable **`Cally-ios-unsigned`** artifact — an
+**unsigned `.ipa`**. This needs **no Apple account and no secrets**, exactly like
+the Windows build.
+
+> **iOS is not Windows.** A Windows `.zip` just runs; an iOS `.ipa` must be
+> *code-signed* to launch on an iPhone. The CI build is unsigned, so your friend
+> signs it themselves at install time with their own **free Apple ID**. No paid
+> Developer account is required.
+
+### Your friend installs it (free, ~15 min, no jailbreak)
+
+1. On the GitHub **Actions** tab, open the latest **iOS build** run and download
+   the **Cally-ios-unsigned** artifact; unzip it to get `Cally-ios-unsigned.ipa`.
+2. Install a sideloader on their **computer**:
+   - **Windows/macOS:** [Sideloadly](https://sideloadly.io) (simplest), or
+   - **AltStore** ([altstore.io](https://altstore.io)) if they want on-device
+     auto-refresh.
+3. Plug in the iPhone, open the sideloader, drag in the `.ipa`, and sign in with
+   their **Apple ID** (an app-specific password may be asked for).
+4. On the iPhone: **Settings → General → VPN & Device Management** → trust the
+   developer (their Apple ID).
+5. Launch Cally.
+
+**Free-account limits (Apple's, not ours):** the app **expires after 7 days** and
+must be re-installed/refreshed (AltStore can auto-refresh over Wi-Fi); max 3
+sideloaded apps per free Apple ID. A **paid** Developer account removes the 7-day
+limit and enables TestFlight (below).
+
+### The home-screen widget is not in the CI build
+
+The CI job builds only the app (the `Runner` target). The **WidgetKit extension**
+(`CallyWidget`) must first be added to the Xcode project by hand on a Mac (see
+**Add the WidgetKit extension** above) and committed, because its target lives in
+`ios/Runner.xcodeproj` which isn't scripted here. Until then the app runs fully;
+only the home-screen widget is absent from the sideloaded build.
+
+## Paid distribution (optional, needs an Apple Developer account, $99/yr)
+
+For a signed build / **TestFlight** (no 7-day limit, friend installs from the
+TestFlight app): add `flutter build ipa --export-options-plist=...`, and store the
+signing certificate, provisioning profile, and App Store Connect API key in the CI
+**secret store** (never in git). Codemagic has a turnkey iOS signing flow if you
+prefer it over GitHub Actions.
